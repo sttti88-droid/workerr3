@@ -3,305 +3,289 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>上班小工具 - 丰居極致全功能版</title>
-    <!-- Tailwind CSS CDN -->
+    <title>上班小工具 - 丰居中壢館終極舒適大字版</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         body {
             font-family: 'Quicksand', 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
             background-color: #FDFBF7;
+            font-size: 16px;
         }
-        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #FDFBF7; }
         ::-webkit-scrollbar-thumb { background: #EAE3D2; border-radius: 10px; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
         
+        /* 新版發薪日金元寶呼吸高亮特效 */
         .payday-glow {
-            background: linear-gradient(135deg, #FFFDEB 0%, #FEF3C7 100%) !important;
+            background: linear-gradient(135deg, #FFFDF5 0%, #FFF9E6 100%) !important;
             border: 2px solid #F59E0B !important;
-            box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
-            animation: pulseGlow 2s infinite;
-        }
-        @keyframes pulseGlow {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.02); box-shadow: 0 0 12px rgba(245, 158, 11, 0.6); }
-            100% { transform: scale(1); }
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.6);
+            position: relative;
+            overflow: hidden;
         }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* 雙向對談：給旅客看的翻轉特效 */
+        .guest-flip-view {
+            transform: rotate(180deg);
+            transition: transform 0.4s ease-in-out;
+        }
     </style>
 </head>
-<body class="text-[#564E4A] antialiased min-h-screen flex flex-col justify-between pb-24">
+<body class="text-[#564E4A] antialiased min-h-screen flex flex-col justify-between pb-32">
 
-    <!-- Top Header -->
     <header class="px-6 pt-6 pb-2 max-w-md mx-auto w-full flex justify-between items-center">
         <div>
-            <span class="text-xs tracking-widest text-[#A79A8F] uppercase font-semibold">VIA HOTEL SYSTEM</span>
-            <h1 class="text-2xl font-bold text-[#4A403A]">上班小工具</h1>
+            <span class="text-xs tracking-widest text-[#A79A8F] uppercase font-bold">VIA HOTEL SYSTEM</span>
+            <h1 class="text-3xl font-black text-[#4A403A]">上班小工具</h1>
         </div>
-        <div class="bg-[#F4EFE6] text-[#8C7E74] text-xs px-3 py-1.5 rounded-full font-medium shadow-2xs">
+        <div class="bg-[#F4EFE6] text-[#8C7E74] text-sm px-4 py-2 rounded-full font-bold shadow-2xs">
             <i class="fa-regular fa-clock mr-1"></i><span id="header-time">00:00</span>
         </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="flex-1 max-w-md mx-auto w-full px-5 py-2 space-y-5 overflow-x-hidden">
+    <main class="flex-1 max-w-md mx-auto w-full px-4 py-2 space-y-6 overflow-x-hidden">
         
-        <!-- 1. CALENDAR: 排班表頁面 (全功能回歸) -->
         <section id="page-calendar" class="tab-content hidden space-y-4">
-            <!-- 即時公告欄 -->
-            <div class="bg-white rounded-3xl p-5 shadow-xs border border-[#F4EFE6] space-y-3">
+            <div class="bg-white rounded-3xl p-5 shadow-sm border border-[#F4EFE6] space-y-3">
                 <div class="flex justify-between items-center">
-                    <h3 class="text-sm font-bold text-[#4A403A] flex items-center">
-                        <span class="w-1.5 h-3.5 bg-rose-500 rounded-full mr-2"></span>館內即時公告欄
+                    <h3 class="text-base font-bold text-[#4A403A] flex items-center">
+                        <span class="w-2 h-4 bg-rose-500 rounded-full mr-2"></span>館內即時公告欄
                     </h3>
-                    <button onclick="toggleAnnounceEdit()" id="btn-announce-mode" class="text-[11px] font-bold text-[#8C7E74] bg-[#F4EFE6] px-2.5 py-1 rounded-lg hover:bg-[#EAE3D2] cursor-pointer">
+                    <button onclick="toggleAnnounceEdit()" id="btn-announce-mode" class="text-xs font-bold text-[#8C7E74] bg-[#F4EFE6] px-3 py-1.5 rounded-xl hover:bg-[#EAE3D2] cursor-pointer">
                         <i class="fa-solid fa-gear mr-1"></i>管理公告
                     </button>
                 </div>
-                <div id="announce-edit-zone" class="bg-[#FDFBF7] p-3 rounded-2xl border border-[#EAE3D2] space-y-2 hidden">
-                    <input type="text" id="announce-input-title" placeholder="輸入公告標題" class="w-full text-xs p-2.5 bg-white border border-[#EAE3D2] rounded-xl focus:outline-none">
-                    <textarea id="announce-input-content" placeholder="輸入公告詳細內容..." class="w-full text-xs p-2.5 bg-white border border-[#EAE3D2] rounded-xl h-16 focus:outline-none placeholder-[#C8C0B5]"></textarea>
+                <div id="announce-edit-zone" class="bg-[#FDFBF7] p-4 rounded-2xl border border-[#EAE3D2] space-y-3 hidden">
+                    <input type="text" id="announce-input-title" placeholder="輸入公告標題" class="w-full text-sm p-3 bg-white border border-[#EAE3D2] rounded-xl focus:outline-none">
+                    <textarea id="announce-input-content" placeholder="輸入公告詳細內容..." class="w-full text-sm p-3 bg-white border border-[#EAE3D2] rounded-xl h-20 focus:outline-none placeholder-[#C8C0B5]"></textarea>
                     <div class="flex justify-between items-center">
-                        <label class="flex items-center space-x-1.5 text-xs text-[#6E6157] font-medium cursor-pointer">
-                            <input type="checkbox" id="announce-input-urgent" class="accent-rose-500 rounded">
-                            <span class="text-rose-600 font-bold">設置為緊急高亮</span>
+                        <label class="flex items-center space-x-2 text-sm text-[#6E6157] font-bold cursor-pointer">
+                            <input type="checkbox" id="announce-input-urgent" class="accent-rose-500 w-4 h-4 rounded">
+                            <span class="text-rose-600">設置為緊急高亮</span>
                         </label>
-                        <button onclick="addAnnouncement()" class="bg-[#8C7E74] text-white text-xs px-4 py-1.5 rounded-xl font-bold cursor-pointer">發布</button>
+                        <button onclick="addAnnouncement()" class="bg-[#8C7E74] text-white text-sm px-5 py-2 rounded-xl font-bold cursor-pointer">發布</button>
                     </div>
                 </div>
-                <div id="announce-list-container" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
+                <div id="announce-list-container" class="space-y-2 max-h-52 overflow-y-auto pr-1"></div>
             </div>
 
-            <!-- 月曆排班 -->
-            <div class="bg-white rounded-3xl p-5 shadow-xs border border-[#F4EFE6]">
+            <div class="bg-white rounded-3xl p-5 shadow-sm border border-[#F4EFE6]">
                 <div class="flex justify-between items-center mb-4">
-                    <button onclick="changeMonth(-1)" class="w-8 h-8 rounded-full bg-[#F4EFE6] text-[#8C7E74] flex items-center justify-center hover:bg-[#EAE3D2] cursor-pointer">
-                        <i class="fa-solid fa-chevron-left text-xs"></i>
+                    <button onclick="changeMonth(-1)" class="w-10 h-10 rounded-full bg-[#F4EFE6] text-[#8C7E74] flex items-center justify-center hover:bg-[#EAE3D2] cursor-pointer">
+                        <i class="fa-solid fa-chevron-left text-sm"></i>
                     </button>
-                    <h2 id="calendar-month-year" class="text-sm font-bold text-[#4A403A] tracking-wider">2026年 05月</h2>
-                    <button onclick="changeMonth(1)" class="w-8 h-8 rounded-full bg-[#F4EFE6] text-[#8C7E74] flex items-center justify-center hover:bg-[#EAE3D2] cursor-pointer">
-                        <i class="fa-solid fa-chevron-right text-xs"></i>
+                    <h2 id="calendar-month-year" class="text-base font-bold text-[#4A403A] tracking-wider">2026年 05月</h2>
+                    <button onclick="changeMonth(1)" class="w-10 h-10 rounded-full bg-[#F4EFE6] text-[#8C7E74] flex items-center justify-center hover:bg-[#EAE3D2] cursor-pointer">
+                        <i class="fa-solid fa-chevron-right text-sm"></i>
                     </button>
                 </div>
-                <div class="calendar-grid text-center text-[10px] font-bold text-[#A79A8F] mb-2 border-b border-[#FDFBF7] pb-1">
+                <div class="calendar-grid text-center text-xs font-bold text-[#A79A8F] mb-2 border-b border-[#FDFBF7] pb-1">
                     <div>日</div><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div>
                 </div>
-                <div id="calendar-days" class="calendar-grid gap-1.5"></div>
+                <div id="calendar-days" class="calendar-grid gap-2"></div>
             </div>
 
-            <!-- 劃班面板 -->
-            <div id="duty-panel" class="bg-white rounded-3xl p-5 shadow-xs border border-[#F4EFE6] hidden">
+            <div id="duty-panel" class="bg-white rounded-3xl p-5 shadow-sm border border-[#F4EFE6] hidden">
                 <div class="flex justify-between items-center mb-3">
-                    <h3 class="text-xs font-bold text-[#4A403A]">設定 <span id="selected-date-str" class="underline">2026/05/28</span> 的班別</h3>
-                    <button onclick="closeDutyPanel()" class="text-xs text-[#BCB3A8] cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+                    <h3 class="text-sm font-bold text-[#4A403A]">設定 <span id="selected-date-str" class="underline">2026/05/28</span> 的班別</h3>
+                    <button onclick="closeDutyPanel()" class="text-base text-[#BCB3A8] p-1 cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
                 </div>
-                <div class="grid grid-cols-3 gap-2 text-xs">
-                    <button onclick="setDuty('早班')" class="p-2 bg-amber-50 text-amber-800 border border-amber-200 rounded-xl font-medium cursor-pointer">☀️ 早班</button>
-                    <button onclick="setDuty('中班')" class="p-2 bg-orange-50 text-orange-800 border border-orange-200 rounded-xl font-medium cursor-pointer">⛅ 中班</button>
-                    <button onclick="setDuty('晚班')" class="p-2 bg-purple-50 text-purple-800 border border-purple-200 rounded-xl font-medium cursor-pointer">🌙 晚班</button>
-                    <button onclick="setDuty('休假')" class="p-2 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl font-bold cursor-pointer">🌴 休假</button>
-                    <button onclick="clearDuty()" class="p-2 bg-gray-50 border border-gray-200 text-gray-500 rounded-xl col-span-2 cursor-pointer">清除紀錄</button>
+                <div class="grid grid-cols-4 gap-2 text-sm">
+                    <button onclick="setDuty('早班')" class="p-2 bg-amber-50 text-amber-800 border border-amber-200 rounded-xl font-bold cursor-pointer">☀️ 早班</button>
+                    <button onclick="setDuty('中班')" class="p-2 bg-orange-50 text-orange-800 border border-orange-200 rounded-xl font-bold cursor-pointer">⛅ 中班</button>
+                    <button onclick="setDuty('晚班')" class="p-2 bg-purple-50 text-purple-800 border border-purple-200 rounded-xl font-bold cursor-pointer">🌙 晚班</button>
+                    <button onclick="setDuty('休')" class="p-2 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl font-black cursor-pointer">🌴 休假</button>
+                    <button onclick="setDuty('病')" class="p-2 bg-rose-50 text-rose-700 border border-rose-200 rounded-xl font-black cursor-pointer">🤒 病假</button>
+                    <button onclick="setDuty('生')" class="p-2 bg-pink-50 text-pink-700 border border-pink-200 rounded-xl font-black cursor-pointer">🌸 生理</button>
+                    <button onclick="setDuty('事')" class="p-2 bg-blue-50 text-blue-700 border border-blue-200 rounded-xl font-black cursor-pointer">💼 事假</button>
+                    <button onclick="setDuty('特')" class="p-2 bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-xl font-black cursor-pointer">✈️ 特休</button>
+                    <button onclick="setDuty('補')" class="p-2 bg-teal-50 text-teal-700 border border-teal-200 rounded-xl font-black cursor-pointer">⏳ 補休</button>
+                    <button onclick="clearDuty()" class="p-2 bg-gray-50 border border-gray-200 text-gray-500 rounded-xl font-bold col-span-3 cursor-pointer">清除紀錄</button>
                 </div>
             </div>
 
-            <!-- 每日正能量 -->
-            <div class="bg-gradient-to-br from-[#FDFBF7] to-[#F4EFE6] rounded-3xl p-4 shadow-2xs border border-[#EAE3D2] text-center space-y-1">
-                <div class="text-[10px] uppercase font-bold text-[#A79A8F] tracking-widest">Daily Energy</div>
-                <p id="energy-quote" class="text-xs font-medium text-[#4A403A] italic px-2 py-0.5">細節決定品質，感謝你為中壢館守住每一個完美細節！</p>
+            <div class="bg-gradient-to-r from-amber-50 to-orange-50 rounded-3xl p-5 shadow-sm border border-amber-100/70 text-center space-y-1">
+                <span class="text-xl">✨</span>
+                <p class="text-base font-black text-amber-900" id="motivate-text">每一位旅客的舒適回憶，都有你流汗付出的足跡。今天也辛苦了！</p>
+                <p class="text-xs text-amber-700/80 font-bold">丰居中壢館 · 夥伴打氣看板</p>
             </div>
         </section>
 
-        <!-- 2. ROOMS: 查房小工具 (保證內含 200 與 715 房) -->
         <section id="page-rooms" class="tab-content hidden space-y-4">
-            <div class="bg-white rounded-3xl p-5 shadow-xs border border-[#F4EFE6] space-y-4">
+            <div class="bg-white rounded-3xl p-5 shadow-sm border border-[#F4EFE6] space-y-4">
                 <div class="flex justify-between items-center border-b border-[#F4EFE6] pb-3">
                     <div>
-                        <h3 class="text-sm font-bold text-[#4A403A] flex items-center">
-                            <span class="w-1.5 h-3.5 bg-amber-500 rounded-full mr-2"></span>直覺連選查房工具
+                        <h3 class="text-base font-bold text-[#4A403A] flex items-center">
+                            <span class="w-2 h-4 bg-amber-500 rounded-full mr-2"></span>直覺連選查房工具
                         </h3>
-                        <p class="text-[10px] text-amber-600 font-bold mt-0.5">💡 直接點擊房號即可連選切換狀態</p>
+                        <p class="text-xs text-amber-600 font-bold mt-0.5">💡 點擊房號切換狀態，雙擊可編輯下方備註</p>
                     </div>
-                    <button onclick="resetAllRooms()" class="text-[10px] font-bold text-rose-600 bg-rose-50 border border-rose-200 px-2.5 py-1.5 rounded-xl hover:bg-rose-100 cursor-pointer">
-                        一鍵重置
-                    </button>
+                    <button onclick="resetAllRooms()" class="text-xs font-bold text-rose-600 bg-rose-50 border border-rose-200 px-3 py-2 rounded-xl hover:bg-rose-100 cursor-pointer">一鍵重置</button>
                 </div>
 
-                <!-- 樓層標籤 -->
-                <div class="flex overflow-x-auto gap-1.5 pb-1 no-scrollbar" id="floor-tabs-container"></div>
+                <div class="flex overflow-x-auto gap-2 pb-1 no-scrollbar" id="floor-tabs-container"></div>
 
-                <!-- 狀態說明圖例 -->
-                <div class="grid grid-cols-5 gap-1 text-[9px] text-center font-bold bg-[#FDFBF7] p-2 rounded-xl border border-[#F4EFE6]">
-                    <div class="text-emerald-700 bg-emerald-50 py-0.5 rounded">OK房</div>
-                    <div class="text-blue-600 bg-blue-50 py-0.5 rounded">入住中</div>
-                    <div class="text-orange-600 bg-orange-50 py-0.5 rounded">待掃房</div>
-                    <div class="text-purple-600 bg-purple-50 py-0.5 rounded">待查房</div>
-                    <div class="text-rose-600 bg-rose-50 py-0.5 rounded">故障房</div>
+                <div class="grid grid-cols-5 gap-1 text-xs text-center font-bold bg-[#FDFBF7] p-2 rounded-xl border border-[#F4EFE6]">
+                    <div class="text-emerald-700 bg-emerald-50 py-1 rounded">OK房</div>
+                    <div class="text-blue-600 bg-blue-50 py-1 rounded">入住中</div>
+                    <div class="text-orange-600 bg-orange-50 py-1 rounded">待掃房</div>
+                    <div class="text-purple-600 bg-purple-50 py-1 rounded">待查房</div>
+                    <div class="text-rose-600 bg-rose-50 py-1 rounded">故障房</div>
                 </div>
 
-                <!-- 房號矩陣 -->
-                <div id="rooms-matrix-grid" class="grid grid-cols-4 gap-2 pt-2"></div>
+                <div id="rooms-matrix-grid" class="grid grid-cols-3 gap-2.5 pt-1"></div>
             </div>
 
-            <!-- 缺失快速加註備忘錄 -->
-            <div class="bg-white rounded-3xl p-5 shadow-xs border border-[#F4EFE6] space-y-2">
+            <div class="bg-white rounded-3xl p-5 shadow-sm border border-[#F4EFE6] space-y-3">
                 <div class="flex justify-between items-center">
-                    <span class="text-xs font-bold text-[#4A403A]">📋 點選下方快速填寫缺失文字：</span>
-                    <span id="active-note-target" class="text-xs font-black text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md">請先點擊上方任何房號</span>
+                    <span class="text-sm font-bold text-[#4A403A]">📋 房號缺失狀態備註：</span>
+                    <span id="active-note-target" class="text-xs font-black text-amber-700 bg-amber-50 px-2.5 py-1 rounded-md">請先雙擊上方房號</span>
                 </div>
-                <div class="flex flex-wrap gap-1">
-                    <button onclick="addQuickNoteToActive('備品毛巾未補')" class="text-[10px] bg-[#FDFBF7] border border-[#EAE3D2] px-2 py-1 rounded-lg text-[#6E6157] cursor-pointer">❌ 備品未補</button>
-                    <button onclick="addQuickNoteToActive('浴室留有水漬')" class="text-[10px] bg-[#FDFBF7] border border-[#EAE3D2] px-2 py-1 rounded-lg text-[#6E6157] cursor-pointer">❌ 浴室水漬</button>
-                    <button onclick="addQuickNoteToActive('床單發現污漬')" class="text-[10px] bg-[#FDFBF7] border border-[#EAE3D2] px-2 py-1 rounded-lg text-[#6E6157] cursor-pointer">❌ 床單污漬</button>
-                    <button onclick="addQuickNoteToActive('地面毛髮未清')" class="text-[10px] bg-[#FDFBF7] border border-[#EAE3D2] px-2 py-1 rounded-lg text-[#6E6157] cursor-pointer">❌ 地面毛髮</button>
-                    <button onclick="addQuickNoteToActive('冷氣異音不冷')" class="text-[10px] bg-[#FDFBF7] border border-[#EAE3D2] px-2 py-1 rounded-lg text-[#6E6157] cursor-pointer">🔧 冷氣不冷</button>
-                    <button onclick="clearActiveRoomNote()" class="text-[10px] bg-gray-100 px-2 py-1 rounded-lg text-gray-500 font-bold ml-auto cursor-pointer">⚠️ 清除備註</button>
+                <div class="flex gap-2">
+                    <input type="text" id="room-custom-note-input" disabled placeholder="雙擊上方房號後，可在這裡打字輸入備註..." class="flex-1 text-sm bg-[#FDFBF7] border border-[#EAE3D2] rounded-xl px-3 py-2.5 focus:outline-none text-[#4A403A] font-medium disabled:opacity-50">
+                    <button onclick="saveCustomRoomNote()" id="btn-save-custom-note" disabled class="bg-amber-600 text-white font-bold text-xs px-4 rounded-xl disabled:opacity-50 cursor-pointer">儲存</button>
+                </div>
+                <div class="flex flex-wrap gap-1.5 pt-1">
+                    <button onclick="addQuickNoteToActive('備品毛巾未補')" class="text-xs font-medium bg-[#FDFBF7] border border-[#EAE3D2] px-2.5 py-1.5 rounded-lg text-[#6E6157] cursor-pointer">❌ 備品未補</button>
+                    <button onclick="addQuickNoteToActive('浴室留有水漬')" class="text-xs font-medium bg-[#FDFBF7] border border-[#EAE3D2] px-2.5 py-1.5 rounded-lg text-[#6E6157] cursor-pointer">❌ 浴室水漬</button>
+                    <button onclick="addQuickNoteToActive('床單發現污漬')" class="text-xs font-medium bg-[#FDFBF7] border border-[#EAE3D2] px-2.5 py-1.5 rounded-lg text-[#6E6157] cursor-pointer">❌ 床單污漬</button>
+                    <button onclick="addQuickNoteToActive('地面毛髮未清')" class="text-xs font-medium bg-[#FDFBF7] border border-[#EAE3D2] px-2.5 py-1.5 rounded-lg text-[#6E6157] cursor-pointer">❌ 地面毛髮</button>
+                    <button onclick="addQuickNoteToActive('冷氣異音不冷')" class="text-xs font-medium bg-[#FDFBF7] border border-[#EAE3D2] px-2.5 py-1.5 rounded-lg text-[#6E6157] cursor-pointer">🔧 冷氣不冷</button>
+                    <button onclick="clearActiveRoomNote()" class="text-xs bg-gray-100 px-3 py-1.5 rounded-lg text-gray-500 font-bold ml-auto cursor-pointer">⚠️ 清除全部</button>
                 </div>
             </div>
         </section>
 
-        <!-- 3. TRANSLATE: 自由打字打中文翻譯機 (支援 泰、越、印、英、日、韓 + 真實發音) -->
         <section id="page-translate" class="tab-content hidden space-y-4">
-            <div class="bg-white rounded-3xl p-5 shadow-xs border border-[#F4EFE6] space-y-4">
+            <div class="bg-white rounded-3xl p-5 shadow-sm border border-[#F4EFE6] space-y-4">
                 <div>
-                    <h3 class="text-sm font-bold text-[#4A403A] flex items-center">
-                        <span class="w-1.5 h-3.5 bg-indigo-600 rounded-full mr-2"></span>自由輸入多國翻譯機
+                    <h3 class="text-base font-bold text-[#4A403A] flex items-center">
+                        <span class="w-2 h-4 bg-indigo-600 rounded-full mr-2"></span>櫃檯專用即時隨心對談機
                     </h3>
-                    <p class="text-[10px] text-gray-400 mt-0.5">請在下方自行輸入想對外國客人說的話，即可精準翻譯與播放發音</p>
+                    <p class="text-xs text-amber-600 font-bold mt-0.5">💡 修正完成！請直接在下方打字，並自由切換目標語系。</p>
                 </div>
                 
-                <!-- 自由輸入框與常用大抄快捷 -->
-                <div class="space-y-2">
-                    <textarea id="trans-custom-input" placeholder="請在此輸入任何中文（例如：請幫我確認房卡、早餐在二樓...）" class="w-full text-xs p-3.5 bg-[#FDFBF7] border border-[#EAE3D2] rounded-2xl h-24 focus:outline-none text-[#4A403A] font-medium leading-relaxed resize-none"></textarea>
-                    
-                    <div class="flex overflow-x-auto gap-1 pb-1 no-scrollbar">
-                        <button onclick="applyFastText('請出示您的護照與辦理入住。')" class="text-[10px] bg-gray-100 px-2.5 py-1 rounded-lg text-gray-600 shrink-0 cursor-pointer">📋 登記護照</button>
-                        <button onclick="applyFastText('房間已經全部清掃完畢，可以進房了。')" class="text-[10px] bg-gray-100 px-2.5 py-1 rounded-lg text-gray-600 shrink-0 cursor-pointer">📋 清掃完畢</button>
-                        <button onclick="applyFastText('請問需要幫您補充乾淨毛巾或備品嗎？')" class="text-[10px] bg-gray-100 px-2.5 py-1 rounded-lg text-gray-600 shrink-0 cursor-pointer">📋 補毛巾</button>
-                        <button onclick="applyFastText('退房時間為上午十一點，謝謝您。')" class="text-[10px] bg-gray-100 px-2.5 py-1 rounded-lg text-gray-600 shrink-0 cursor-pointer">📋 退房時間</button>
+                <div class="grid grid-cols-3 gap-2">
+                    <button onclick="setLangAndTranslate('en')" id="l-btn-en" class="py-2.5 rounded-xl text-sm font-bold border cursor-pointer">🇺🇸 英文</button>
+                    <button onclick="setLangAndTranslate('ja')" id="l-btn-ja" class="py-2.5 rounded-xl text-sm font-bold border cursor-pointer">🇯🇵 日文</button>
+                    <button onclick="setLangAndTranslate('ko')" id="l-btn-ko" class="py-2.5 rounded-xl text-sm font-bold border cursor-pointer">🇰🇷 韓文</button>
+                    <button onclick="setLangAndTranslate('th')" id="l-btn-th" class="py-2.5 rounded-xl text-sm font-bold border cursor-pointer">🇹🇭 泰文</button>
+                    <button onclick="setLangAndTranslate('vi')" id="l-btn-vi" class="py-2.5 rounded-xl text-sm font-bold border cursor-pointer">🇻🇳 越南</button>
+                    <button onclick="setLangAndTranslate('id')" id="l-btn-id" class="py-2.5 rounded-xl text-sm font-bold border cursor-pointer">🇮🇩 印尼</button>
+                </div>
+
+                <div class="space-y-3 bg-[#FDFBF7] border-2 border-indigo-100 p-4 rounded-2xl">
+                    <div class="space-y-1">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-black text-[#8C7E74]">✍️ 員工輸入華語 (可任意打字修改)：</span>
+                            <button onclick="clearTranslateInput()" class="text-[11px] font-bold text-gray-400 hover:text-rose-600">清除輸入</button>
+                        </div>
+                        <textarea id="custom-translate-input" oninput="triggerLiveTranslation()" placeholder="請在此輸入您想對客人說的任何中文..." class="w-full text-sm p-3 bg-white border border-[#EAE3D2] rounded-xl h-20 focus:outline-none focus:border-indigo-400 font-medium placeholder-[#C8C0B5]"></textarea>
+                    </div>
+
+                    <div class="space-y-1 pt-2 border-t border-indigo-50/60">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-black text-indigo-700">🔮 旅客母語即時對照：</span>
+                            <button onclick="toggleGuestFlip()" class="text-xs font-black bg-indigo-50 text-indigo-600 px-2.5 py-1 rounded-lg hover:bg-indigo-100">
+                                <i class="fa-solid fa-rotate mr-1"></i>🔄 翻轉螢幕給客人看
+                            </button>
+                        </div>
+                        <div id="translate-output-container" class="bg-white p-3.5 rounded-xl border border-indigo-100 transition-all duration-300 min-h-[60px]">
+                            <p id="custom-translate-output" class="text-base font-black text-slate-800 select-all tracking-wide">Waiting for input...</p>
+                        </div>
+                        <div class="flex space-x-2 pt-1">
+                            <button onclick="speakCustomTranslatedText()" class="flex-1 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold shadow-2xs flex items-center justify-center space-x-1 cursor-pointer">
+                                <i class="fa-solid fa-volume-high"></i> <span>語音語音播報</span>
+                            </button>
+                            <button onclick="copyTranslatedText()" class="py-2 px-4 bg-gray-100 text-gray-600 rounded-xl text-xs font-bold hover:bg-gray-200">
+                                <i class="fa-regular fa-copy"></i> 複製
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                <!-- 語系選擇 -->
-                <div class="space-y-3 pt-2 border-t border-[#F4EFE6]">
-                    <span class="text-[10px] font-bold text-[#A79A8F] block">請選擇要翻譯的目標語言：</span>
-                    <div class="grid grid-cols-3 gap-1.5">
-                        <button onclick="setLangAndTranslate('en')" id="l-btn-en" class="py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer">🇺🇸 英文</button>
-                        <button onclick="setLangAndTranslate('ja')" id="l-btn-ja" class="py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer">🇯🇵 日文</button>
-                        <button onclick="setLangAndTranslate('ko')" id="l-btn-ko" class="py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer">🇰🇷 韓文</button>
-                        <button onclick="setLangAndTranslate('th')" id="l-btn-th" class="py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer">🇹🇭 泰文</button>
-                        <button onclick="setLangAndTranslate('vi')" id="l-btn-vi" class="py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer">🇻🇳 越南語</button>
-                        <button onclick="setLangAndTranslate('id')" id="l-btn-id" class="py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer">🇮🇩 印尼語</button>
-                    </div>
-
-                    <!-- 翻譯結果顯示區 -->
-                    <div id="custom-trans-result-box" class="bg-[#FDFBF7] border border-[#EAE3D2] rounded-2xl p-4 space-y-3 mt-2">
-                        <div class="flex justify-between items-center">
-                            <span class="text-[9px] font-bold tracking-widest text-indigo-600 uppercase bg-indigo-50 px-2 py-0.5 rounded" id="custom-lang-title">ENGLISH</span>
-                            <button onclick="copyCustomTransText()" class="text-xs text-gray-400 hover:text-gray-600 cursor-pointer"><i class="fa-regular fa-copy mr-1"></i>複製結果</button>
-                        </div>
-                        <p id="custom-translation-box" class="text-xs text-[#4A403A] font-bold leading-relaxed min-h-[40px] font-mono select-all bg-white p-2 rounded-xl border border-[#F4EFE6]"></p>
-                        
-                        <!-- 真人語音播報 -->
-                        <button onclick="speakCustomTranslation()" class="w-full py-3 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold shadow-xs flex items-center justify-center space-x-2 transition-all cursor-pointer">
-                            <i class="fa-solid fa-volume-high text-base"></i>
-                            <span>播放語音 (播給外國客人聽)</span>
-                        </button>
-                    </div>
+                <div class="pt-2 border-t border-[#F4EFE6] space-y-3">
+                    <span class="text-xs font-black text-[#A79A8F] block tracking-wider uppercase">📌 館內固定大抄看板 (隨點隨播)</span>
+                    <div id="fixed-cheat-sheet-container" class="space-y-2.5"></div>
                 </div>
             </div>
         </section>
 
-        <!-- 4. PLAN: 今日交辦清單 & 開會時間安排 (完全修復可用) -->
         <section id="page-plan" class="tab-content hidden space-y-4">
-            <div class="bg-white rounded-3xl p-5 shadow-xs border border-[#F4EFE6] space-y-3">
-                <h3 class="text-sm font-bold text-[#4A403A] flex items-center">
-                    <span class="w-1.5 h-3.5 bg-[#8C7E74] rounded-full mr-2"></span>今日交辦事項
+            <div class="bg-white rounded-3xl p-5 shadow-sm border border-[#F4EFE6] space-y-3">
+                <h3 class="text-base font-bold text-[#4A403A] flex items-center">
+                    <span class="w-2 h-4 bg-[#8C7E74] rounded-full mr-2"></span>今日交辦事項
                 </h3>
                 <div class="flex mb-2">
-                    <input type="text" id="todo-input" placeholder="新增今日需要追蹤的交辦事項..." class="flex-1 text-xs bg-[#FDFBF7] border border-[#EAE3D2] rounded-l-xl px-3 py-2.5 focus:outline-none">
-                    <button onclick="addTodoItem()" class="bg-[#8C7E74] text-white text-xs px-4 rounded-r-xl font-bold cursor-pointer">+</button>
+                    <input type="text" id="todo-input" placeholder="新增今日交辦事項..." class="flex-1 text-sm bg-[#FDFBF7] border border-[#EAE3D2] rounded-l-xl px-3 py-3 focus:outline-none">
+                    <button onclick="addTodoItem()" class="bg-[#8C7E74] text-white font-bold text-lg px-5 rounded-r-xl cursor-pointer">+</button>
                 </div>
-                <div id="checklist-container" class="space-y-2 max-h-44 overflow-y-auto pr-1"></div>
+                <div id="checklist-container" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
             </div>
 
-            <!-- 開會時間與排程助手 -->
-            <div class="bg-white rounded-3xl p-5 shadow-xs border border-[#F4EFE6] space-y-3">
-                <h3 class="text-sm font-bold text-[#4A403A] flex items-center">
-                    <span class="w-1.5 h-3.5 bg-amber-500 rounded-full mr-2"></span>館內開會與交接排程助手
+            <div class="bg-white rounded-3xl p-5 shadow-sm border border-[#F4EFE6] space-y-3">
+                <h3 class="text-base font-bold text-[#4A403A] flex items-center">
+                    <span class="w-2 h-4 bg-amber-500 rounded-full mr-2"></span>開會與交接排程助手
                 </h3>
-                <div class="bg-[#FDFBF7] border border-[#EAE3D2] rounded-2xl p-3 space-y-2.5">
-                    <div class="grid grid-cols-2 gap-2 text-xs">
-                        <input type="text" id="meet-title" placeholder="會議主旨(如：早班交接)" class="p-2 bg-white border border-[#EAE3D2] rounded-xl focus:outline-none text-xs text-[#4A403A]">
-                        <input type="time" id="meet-time" class="p-2 bg-white border border-[#EAE3D2] rounded-xl focus:outline-none font-mono text-xs text-[#4A403A]">
+                <div class="bg-[#FDFBF7] border border-[#EAE3D2] rounded-2xl p-4 space-y-3">
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="text" id="meet-title" placeholder="會議主旨(如：早班交接)" class="p-2.5 bg-white border border-[#EAE3D2] rounded-xl focus:outline-none text-sm text-[#4A403A]">
+                        <input type="time" id="meet-time" class="p-2.5 bg-white border border-[#EAE3D2] rounded-xl focus:outline-none font-mono text-sm text-[#4A403A]">
                     </div>
-                    <button onclick="saveMeetingSchedule()" class="w-full bg-[#8C7E74] text-white py-1.5 rounded-xl text-xs font-bold cursor-pointer">排入今日行程</button>
+                    <button onclick="saveMeetingSchedule()" class="w-full bg-[#8C7E74] text-white py-2.5 rounded-xl text-sm font-bold cursor-pointer">排入今日行程</button>
                 </div>
-                <div id="scheduled-meetings-box" class="space-y-1.5 max-h-32 overflow-y-auto"></div>
-
-                <!-- 開會計時器 -->
-                <div class="bg-[#FDFBF7] border border-[#EAE3D2] rounded-2xl p-3 flex items-center justify-between">
-                    <div>
-                        <span class="text-[10px] font-bold text-[#A79A8F] block">開會發言倒數計時</span>
-                        <span id="timer-display" class="text-xl font-bold font-mono text-[#4A403A]">05:00</span>
-                    </div>
-                    <div class="flex space-x-1.5">
-                        <button onclick="toggleTimer()" id="btn-timer-start" class="bg-[#8C7E74] text-white text-xs px-3 py-1.5 rounded-lg font-medium cursor-pointer">開始</button>
-                        <button onclick="resetTimer()" class="bg-white border border-[#EAE3D2] text-[#6E6157] text-xs px-2.5 py-1.5 rounded-lg cursor-pointer">重設</button>
-                    </div>
-                </div>
+                <div id="scheduled-meetings-box" class="space-y-2 max-h-36 overflow-y-auto"></div>
             </div>
         </section>
 
-        <!-- 5. WALLET: 公費記帳頁面 (完全修復可用) -->
         <section id="page-wallet" class="tab-content hidden space-y-4">
-            <div class="bg-white rounded-3xl p-5 shadow-xs border border-[#F4EFE6] space-y-3">
+            <div class="bg-white rounded-3xl p-5 shadow-sm border border-[#F4EFE6] space-y-3">
                 <div class="flex justify-between items-center">
-                    <h3 class="text-sm font-bold text-[#4A403A]">公費與代墊款記帳</h3>
-                    <div class="text-xs font-bold text-amber-700 bg-amber-50 px-2 py-1 rounded-lg">
-                        總支出額: $<span id="expense-total-amount">0</span>
+                    <h3 class="text-base font-bold text-[#4A403A]">公費與代墊款記帳</h3>
+                    <div class="text-sm font-bold text-amber-700 bg-amber-50 px-3 py-1.5 rounded-lg">
+                        總支出: $<span id="expense-total-amount">0</span>
                     </div>
                 </div>
-                <div class="grid grid-cols-2 gap-2 text-xs">
-                    <input type="text" id="expense-title" placeholder="項目名稱 (如：買抹布)" class="p-2.5 bg-[#FDFBF7] border border-[#EAE3D2] rounded-xl focus:outline-none">
-                    <input type="number" id="expense-amount" placeholder="金額" class="p-2.5 bg-[#FDFBF7] border border-[#EAE3D2] rounded-xl focus:outline-none">
+                <div class="grid grid-cols-2 gap-2 text-sm">
+                    <input type="text" id="expense-title" placeholder="項目名稱 (如：買抹布)" class="p-3 bg-[#FDFBF7] border border-[#EAE3D2] rounded-xl focus:outline-none">
+                    <input type="number" id="expense-amount" placeholder="金額" class="p-3 bg-[#FDFBF7] border border-[#EAE3D2] rounded-xl focus:outline-none">
                 </div>
-                <button onclick="addExpense()" class="w-full bg-[#8C7E74] text-white py-2.5 rounded-xl text-xs font-bold cursor-pointer">儲存此筆帳目</button>
+                <button onclick="addExpense()" class="w-full bg-[#8C7E74] text-white py-3 rounded-xl text-sm font-bold cursor-pointer">儲存此筆帳目</button>
             </div>
-            <div class="bg-white rounded-3xl p-5 shadow-xs border border-[#F4EFE6]">
-                <div id="expense-list" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
+            <div class="bg-white rounded-3xl p-5 shadow-sm border border-[#F4EFE6]">
+                <div id="expense-list" class="space-y-2 max-h-52 overflow-y-auto pr-1"></div>
             </div>
         </section>
 
-        <!-- 6. INFO: 分館資訊 -->
         <section id="page-info" class="tab-content hidden space-y-4">
-            <div class="bg-white rounded-3xl p-5 shadow-xs border border-[#F4EFE6] space-y-2.5">
+            <div class="bg-white rounded-3xl p-5 shadow-sm border border-[#F4EFE6] space-y-3">
                 <div class="border-b border-[#F4EFE6] pb-2">
-                    <span class="text-[9px] uppercase font-bold tracking-wider text-[#A79A8F]">Zhongli Branch</span>
-                    <h3 class="text-sm font-bold text-[#4A403A]">丰居中立股份有限公司 中壢館</h3>
+                    <span class="text-xs uppercase font-bold tracking-wider text-[#A79A8F]">Zhongli Branch</span>
+                    <h3 class="text-base font-bold text-[#4A403A]">丰居中立股份有限公司 中壢館</h3>
                 </div>
-                <div class="text-xs space-y-2 text-[#6E6157]">
-                    <div class="bg-[#FDFBF7] p-2.5 rounded-xl border border-[#F4EFE6]">
-                        <div class="font-bold text-[#4A403A]">發票抬頭與統編</div>
-                        <div class="text-[11px] text-[#8C7E74] mt-0.5">抬頭：丰居中立股份有限公司<br>統編：60668122</div>
+                <div class="text-sm space-y-2 text-[#6E6157]">
+                    <div class="bg-[#FDFBF7] p-3 rounded-xl border border-[#F4EFE6]">
+                        <div class="font-bold text-[#4A403A] text-sm">發票抬頭與統編</div>
+                        <div class="text-sm text-[#8C7E74] mt-0.5">抬頭：丰居中立股份有限公司<br>統編：60668122</div>
                     </div>
                     <div class="grid grid-cols-2 gap-2">
-                        <div class="bg-[#FDFBF7] p-2 rounded-xl border border-[#F4EFE6]">
-                            <span class="block text-[10px] text-[#BCB3A8]">館店電話</span><a href="tel:034590013" class="text-[#8C7E74] font-bold underline">03-4590013</a>
+                        <div class="bg-[#FDFBF7] p-2.5 rounded-xl border border-[#F4EFE6]">
+                            <span class="block text-xs text-[#BCB3A8]">館店電話</span><a href="tel:034590013" class="text-[#8C7E74] font-bold underline">03-4590013</a>
                         </div>
-                        <div class="bg-[#FDFBF7] p-2 rounded-xl border border-[#F4EFE6]">
-                            <span class="block text-[10px] text-[#BCB3A8]">傳真號碼</span><span class="text-[#6E6157] font-medium">03-4590023</span>
+                        <div class="bg-[#FDFBF7] p-2.5 rounded-xl border border-[#F4EFE6]">
+                            <span class="block text-xs text-[#BCB3A8]">傳真號碼</span><span class="text-[#6E6157] font-bold">03-4590023</span>
                         </div>
                     </div>
-                    <div class="bg-[#FDFBF7] p-2.5 rounded-xl border border-[#F4EFE6]">
-                        <span class="block text-[10px] text-[#BCB3A8]">館店地址</span><span class="text-[11px] text-[#4A403A] font-medium">桃園市中壢區新興路194巷5號</span>
+                    <div class="bg-[#FDFBF7] p-3 rounded-xl border border-[#F4EFE6]">
+                        <span class="block text-xs text-[#BCB3A8]">館店地址</span><span class="text-sm text-[#4A403A] font-bold">桃園市中壢區新興路194巷5號</span>
                     </div>
                 </div>
             </div>
@@ -309,74 +293,77 @@
 
     </main>
 
-    <!-- 底部導覽列 -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-md border-t border-[#F4EFE6] py-3 px-1 shadow-lg flex justify-around items-center max-w-md mx-auto rounded-t-3xl md:bottom-4 md:rounded-3xl md:border z-40">
-        <button onclick="switchTab('calendar')" id="nav-calendar" class="nav-btn flex flex-col items-center space-y-0.5 text-[#BCB3A8] flex-1 cursor-pointer">
-            <i class="fa-solid fa-calendar-days text-base"></i><span class="text-[9px] font-bold">排班表</span>
+    <nav class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-[#F4EFE6] py-3.5 px-1 shadow-xl flex justify-around items-center max-w-md mx-auto rounded-t-3xl md:bottom-4 md:rounded-3xl md:border z-40">
+        <button onclick="switchTab('calendar')" id="nav-calendar" class="nav-btn flex flex-col items-center space-y-1 text-[#BCB3A8] flex-1 cursor-pointer">
+            <i class="fa-solid fa-calendar-days text-xl"></i><span class="text-xs font-bold">排班表</span>
         </button>
-        <button onclick="switchTab('rooms')" id="nav-rooms" class="nav-btn flex flex-col items-center space-y-0.5 text-[#BCB3A8] flex-1 cursor-pointer">
-            <i class="fa-solid fa-bed text-base"></i><span class="text-[9px] font-bold">查房工具</span>
+        <button onclick="switchTab('rooms')" id="nav-rooms" class="nav-btn flex flex-col items-center space-y-1 text-[#BCB3A8] flex-1 cursor-pointer">
+            <i class="fa-solid fa-bed text-xl"></i><span class="text-xs font-bold">查房工具</span>
         </button>
-        <button onclick="switchTab('translate')" id="nav-translate" class="nav-btn flex flex-col items-center space-y-0.5 text-[#BCB3A8] flex-1 cursor-pointer">
-            <i class="fa-solid fa-language text-base"></i><span class="text-[9px] font-bold">即時翻譯</span>
+        <button onclick="switchTab('translate')" id="nav-translate" class="nav-btn flex flex-col items-center space-y-1 text-[#BCB3A8] flex-1 cursor-pointer">
+            <i class="fa-solid fa-language text-xl"></i><span class="text-xs font-bold">即時翻譯</span>
         </button>
-        <button onclick="switchTab('plan')" id="nav-plan" class="nav-btn flex flex-col items-center space-y-0.5 text-[#BCB3A8] flex-1 cursor-pointer">
-            <i class="fa-solid fa-list-check text-base"></i><span class="text-[9px] font-bold">交辦/會議</span>
+        <button onclick="switchTab('plan')" id="nav-plan" class="nav-btn flex flex-col items-center space-y-1 text-[#BCB3A8] flex-1 cursor-pointer">
+            <i class="fa-solid fa-list-check text-xl"></i><span class="text-xs font-bold">交辦/會議</span>
         </button>
-        <button onclick="switchTab('wallet')" id="nav-wallet" class="nav-btn flex flex-col items-center space-y-0.5 text-[#BCB3A8] flex-1 cursor-pointer">
-            <i class="fa-solid fa-wallet text-base"></i><span class="text-[9px] font-bold">公費報帳</span>
+        <button onclick="switchTab('wallet')" id="nav-wallet" class="nav-btn flex flex-col items-center space-y-1 text-[#BCB3A8] flex-1 cursor-pointer">
+            <i class="fa-solid fa-wallet text-xl"></i><span class="text-xs font-bold">公費報帳</span>
         </button>
-        <button onclick="switchTab('info')" id="nav-info" class="nav-btn flex flex-col items-center space-y-0.5 text-[#BCB3A8] flex-1 cursor-pointer">
-            <i class="fa-solid fa-circle-info text-base"></i><span class="text-[9px] font-bold">通訊資訊</span>
+        <button onclick="switchTab('info')" id="nav-info" class="nav-btn flex flex-col items-center space-y-1 text-[#BCB3A8] flex-1 cursor-pointer">
+            <i class="fa-solid fa-circle-info text-xl"></i><span class="text-xs font-bold">資訊</span>
         </button>
     </nav>
 
-    <!-- Toast 提示 -->
-    <div id="toast" class="fixed top-6 left-1/2 -translate-x-1/2 bg-[#4A403A] text-[#FDFBF7] text-xs px-5 py-3 rounded-full shadow-md transition-all duration-300 opacity-0 pointer-events-none z-50 flex items-center space-x-2">
+    <div id="toast" class="fixed top-6 left-1/2 -translate-x-1/2 bg-[#4A403A] text-[#FDFBF7] text-sm font-bold px-6 py-3.5 rounded-full shadow-lg transition-all duration-300 opacity-0 pointer-events-none z-50 flex items-center space-x-2">
         <i class="fa-solid fa-circle-check text-emerald-400"></i><span id="toast-msg">提示訊息</span>
     </div>
 
-    <!-- 驅動核心 JavaScript -->
     <script>
-        // 自由翻譯核心本地智慧語庫與擬真翻譯字典 (全手打中文支援)
-        const localTranslationEngine = {
-            en: { "登記": "For check-in registration.", "護照": "Please show your passport.", "房間": "The room is ready.", "清掃": "Your room has been cleaned.", "毛巾": "Do you need extra towels?", "退房": "Check-out time is 11:00 AM.", "卡": "Here is your room card." },
-            ja: { "登記": "チェックインの手続きです。", "護照": "パスポートをご提示ください。", "房間": "お部屋の準備ができました。", "清掃": "お部屋の清掃が完了しました。", "毛巾": "タオルは必要ですか？", "退房": "チェックアウトは午前11時です。", "卡": "お部屋のカードキーです。" },
-            ko: { "登記": "체크인 등록 절차입니다.", "護照": "여권을 보여주세요.", "房間": "객실 준비가 완료되었습니다.", "清掃": "객실 청소가 완료되었습니다.", "毛巾": "수건이 필요하십니까?", "退房": "체크아웃은 오전 11시입니다.", "卡": "객실 카드키입니다." },
-            th: { "登記": "กรุณาลงทะเบียนเข้าพัก", "護照": "ขอตรวจพาสปอร์ตหน่อยค่ะ", "房間": "ห้องพักพร้อมแล้วค่ะ", "清掃": "ทำความสะอาดห้องเรียบร้อยแล้วค่ะ", "毛巾": "ต้องการผ้าเช็ดตัวเพิ่มไหมคะ", "退房": "เวลาเช็คเอาท์คือ 11 โมงเช้าค่ะ", "卡": "นี่คือคีย์การ์ดของคุณค่ะ" },
-            vi: { "登記": "Làm thủ tục nhận phòng.", "護照": "Vui lòng xuất trình hộ chiếu.", "房間": "Phòng đã sẵn sàng.", "清掃": "Phòng đã được dọn dẹp sạch sẽ.", "毛巾": "Bạn có cần thêm khăn không?", "退房": "Giờ trả phòng là 11 giờ sáng.", "卡": "Đây là thẻ phòng của bạn." },
-            id: { "登記": "Untuk pendaftaran check-in.", "護照": "Silakan tunjukkan paspor Anda.", "房間": "Kamar sudah siap.", "清掃": "Kamar telah dibersihkan.", "毛巾": "Apakah Anda butuh handuk tambahan?", "退房": "Waktu check-out jam 11 pagi.", "卡": "Ini adalah kartu kamar Anda." }
-        };
+        // 激勵金句語錄庫
+        const inspiringQuotes = [
+            "每一位旅客的舒適回憶，都有你流汗付出的足跡。今天也辛苦了！",
+            "親切的微笑是館店最強大的名片，謝謝你今天也在第一線發光！",
+            "細心查房、貼心服務！再忙碌也別忘了喝口水，休息一下唷！",
+            "今天解決的每一個小缺失，都是豐居贏得好口碑的大基石！加油！",
+            "團隊因為有你的堅守而更完整，祝今天值班順心、一切平安！"
+        ];
 
-        // 房號設定（內含 200, 715）
+        // 固定大抄對照配置
+        const fixedCheatSheets = [
+            { ch: "請出示您的護照以辦理入住登記。", en: "Please show your passport for check-in registration.", ja: "チェックイン手続きのため、パスポートをご提示ください。", ko: "체크인 등록을 위해 여권을 보여주세요.", th: "กรุณาแสดงพาสปอร์ตเพื่อลงทะเบียนเข้าพักค่ะ", vi: "Vui lòng xuất trình hộ chiếu để làm thủ tục nhận phòng.", id: "Silakan tunjukkan paspor Anda untuk pendaftaran check-in." },
+            { ch: "房間已經全部清掃完畢，現在可以進房了。", en: "Your room is completely clean and ready for you now.", ja: "お部屋の清掃が完了しましたので、ご入室いただけます。", ko: "객실 청소가 완료되어 지금 입실하실 수 있습니다.", th: "ห้องพักทำความสะอาดเรียบร้อยแล้ว สามารถเข้าห้องได้เลยค่ะ", vi: "Phòng của bạn đã được dọn dẹp sạch sẽ, hiện tại có thể vào phòng.", id: "Kamar Anda sudah selesai dibersihkan, sekarang Anda bisa masuk." },
+            { ch: "請問需要幫您補充乾淨的毛巾或備品嗎？", en: "Would you like us to replenish clean towels or amenities for you?", ja: "新しいタオルやアメニティの補充は必要ですか？", ko: "수건이나 비품을 추가로 보충해 드릴까요?", th: "ต้องการให้เติมผ้าเช็ดตัวผืนใหม่หรือของใช้在ห้องน้ำไหมคะ", vi: "Bạn có cần bổ sung thêm khăn sạch hoặc đồ dùng cá nhân không?", id: "Apakah Anda memerlukan tambahan handuk bersih atau perlengkapan kamar?" },
+            { ch: "飯店退房時間為上午十一點，謝謝您的配合。", en: "The hotel check-out time is 11:00 AM. Thank you for your cooperation.", ja: "チェックアウト時間は午前11時です。ご協力ありがとうございます。", ko: "체크아웃 시간은 오전 11시입니다. 협조해 주셔서 감사합니다.", th: "เวลาเช็คเอาท์ของโรงแรมคือ 11 โมงเช้า ขอขอบคุณค่ะ", vi: "Giờ trả phòng của khách sạn là 11 giờ sáng. Cảm ơn sự hợp tác của bạn.", id: "Waktu check-out hotel adalah jam 11 pagi. Terima kasih atas kerja samanya." },
+            { ch: "這是您的房間卡，請隨身攜帶，進出都需要刷卡。", en: "Here is your room card. Please keep it with you; you'll need it to enter.", ja: "こちらがお部屋のカードキーです。外出の際は常にお持ちください。", ko: "객실 카드키입니다. 출입 시 필요하니 꼭 휴대해 주세요.", th: "นี่คือคีย์การ์ดห้องพักของคุณ กรุณาพกติดตัวไว้ตลอดนะคะ", vi: "Đây là thẻ phòng của bạn. Vui lòng mang theo bên mình khi ra vào.", id: "Ini adalah kartu kamar Anda. Harap bawa selalu karena diperlukan untuk akses." }
+        ];
+
         const hotelRoomsConfig = {
             "1F": [101, 102, 103, 105, 106, 107, 108, 109],
             "2F": [200, 201, 202, 203, 205, 206, 207, 208, 209, 210, 211],
             "3F": [301, 302, 303, 305, 306, 307, 308, 309, 310, 311, 312, 313, 315, 316, 317, 318, 319],
             "5F": [501, 502, 503, 505, 506, 507, 508, 509, 510, 511, 512, 513],
-            "6F": [601, 602, 603, 605, 606, 607, 608, 609, 610, 611, 612, 613],
+            "6F": [601, 602, 603, 605, 606, 607, 608, 609, 610, 611, 612, 613, 615],
             "7F": [701, 702, 703, 705, 706, 707, 708, 709, 710, 711, 712, 713, 715]
         };
 
         const statusSequence = ["OK房", "入住中", "待掃房", "待查房", "故障房"];
 
         let state = {
-            duties: JSON.parse(localStorage.getItem('fe_duties_v4')) || {},
-            expenses: JSON.parse(localStorage.getItem('fe_expenses_v4')) || [],
-            todos: JSON.parse(localStorage.getItem('fe_todos_v4')) || [],
-            announces: JSON.parse(localStorage.getItem('fe_announces_v4')) || [],
-            roomStates: JSON.parse(localStorage.getItem('fe_room_states_v4')) || {},
-            meetings: JSON.parse(localStorage.getItem('fe_meetings_v4')) || [],
+            duties: JSON.parse(localStorage.getItem('fe_duties_v6')) || {},
+            expenses: JSON.parse(localStorage.getItem('fe_expenses_v6')) || [],
+            todos: JSON.parse(localStorage.getItem('fe_todos_v6')) || [],
+            announces: JSON.parse(localStorage.getItem('fe_announces_v6')) || [],
+            roomStates: JSON.parse(localStorage.getItem('fe_room_states_v6')) || {},
+            meetings: JSON.parse(localStorage.getItem('fe_meetings_v6')) || [],
             selectedFloor: "1F",
             activeNoteRoom: null,
             currentTargetLang: "en"
         };
 
         let currentCalendarDate = new Date();
-        let timerInstance = null;
-        let timerSeconds = 300;
         let announceEditMode = false;
         let activeSelectedDateKey = null;
+        let isFlipped = false;
 
         document.addEventListener('DOMContentLoaded', () => {
             switchTab('calendar');
@@ -386,8 +373,9 @@
             initRoomsModule();
             renderTodos();
             renderExpenses();
-            renderMeetings();
             setLangAndTranslate('en');
+            refreshMotivationQuote();
+            renderMeetings();
         });
 
         function initHeaderTime() {
@@ -416,367 +404,406 @@
             setTimeout(() => { toast.classList.add('opacity-0', 'pointer-events-none'); }, 1800);
         }
 
-        // --- 自由輸入自訂翻譯核心邏輯 ---
-        function applyFastText(text) {
-            document.getElementById('trans-custom-input').value = text;
-            translateCurrentText();
+        function refreshMotivationQuote() {
+            const r = Math.floor(Math.random() * inspiringQuotes.length);
+            document.getElementById('motivate-text').innerText = inspiringQuotes[r];
         }
 
+        // --- 全新動態智慧翻譯對談核心 (解決打字死結) ---
         function setLangAndTranslate(langCode) {
             state.currentTargetLang = langCode;
             const langs = ['en', 'ja', 'ko', 'th', 'vi', 'id'];
-            const langLabels = { en: "🇺🇸 ENGLISH", ja: "🇯🇵 日本語", ko: "🇰🇷 한국어", th: "🇹🇭 ภาษาไทย (泰文)", vi: "🇻🇳 Tiếng Việt (越南文)", id: "🇮🇩 Bahasa Indonesia (印尼文)" };
-            
             langs.forEach(l => {
                 const btn = document.getElementById(`l-btn-${l}`);
-                if(l === langCode) btn.className = "py-2 rounded-xl text-xs font-bold border bg-indigo-600 text-white border-indigo-600 shadow-2xs";
-                else btn.className = "py-2 rounded-xl text-xs font-bold border bg-white text-gray-600 border-gray-200 hover:bg-gray-50";
+                if(l === langCode) btn.className = "py-2.5 rounded-xl text-sm font-black border bg-indigo-600 text-white border-indigo-600 shadow-sm";
+                else btn.className = "py-2.5 rounded-xl text-sm font-bold border bg-white text-gray-600 border-gray-200 hover:bg-gray-50";
             });
-            document.getElementById('custom-lang-title').innerText = langLabels[langCode];
-            translateCurrentText();
+            triggerLiveTranslation();
+            renderFixedCheatSheet();
         }
 
-        function translateCurrentText() {
-            const chineseText = document.getElementById('trans-custom-input').value.trim();
-            const outputBox = document.getElementById('custom-translation-box');
-            if(!chineseText) {
-                outputBox.innerText = "(等待輸入中文...)";
+        // 採用高效無阻礙的網頁自由翻譯 API，保證輸入框可以順暢打字
+        function triggerLiveTranslation() {
+            const srcText = document.getElementById('custom-translate-input').value.trim();
+            const outputEl = document.getElementById('custom-translate-output');
+            
+            if (!srcText) {
+                outputEl.innerText = "等待輸入華語...";
                 return;
             }
             
-            let resultText = "";
-            let matched = false;
-            // 掃描關鍵字，提供最精確的商務對照
-            for (let key in localTranslationEngine[state.currentTargetLang]) {
-                if(chineseText.includes(key)) {
-                    resultText = localTranslationEngine[state.currentTargetLang][key];
-                    matched = true;
-                    break;
-                }
-            }
-            if(!matched) {
-                // 通用兜底與基礎翻譯包模擬
-                if(state.currentTargetLang === 'en') resultText = `Please follow hotel guidelines: "${chineseText}"`;
-                else if(state.currentTargetLang === 'ja') resultText = `ホテルの規定をご確認ください: "${chineseText}"`;
-                else if(state.currentTargetLang === 'ko') resultText = `호텔 규정을 확인해 주세요: "${chineseText}"`;
-                else if(state.currentTargetLang === 'th') resultText = `โปรดตรวจสอบกฎของโรงแรม: "${chineseText}"`;
-                else if(state.currentTargetLang === 'vi') resultText = `Vui lòng kiểm tra quy định của khách sạn: "${chineseText}"`;
-                else if(state.currentTargetLang === 'id') resultText = `Harap periksa peraturan hotel: "${chineseText}"`;
-            }
-            outputBox.innerText = resultText;
+            outputEl.innerText = "⚡ 正在即時翻譯中...";
+            
+            const targetLang = state.currentTargetLang;
+            const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=zh-TW&tl=${targetLang}&dt=t&q=${encodeURIComponent(srcText)}`;
+            
+            fetch(url)
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data[0]) {
+                        let translatedResult = "";
+                        data[0].forEach(sentence => {
+                            if (sentence[0]) translatedResult += sentence[0];
+                        });
+                        outputEl.innerText = translatedResult;
+                    }
+                })
+                .catch(() => {
+                    outputEl.innerText = "❌ 翻譯連線異常，請稍後再試";
+                });
         }
 
-        // 綁定打字即時翻譯
-        document.getElementById('trans-custom-input').addEventListener('input', translateCurrentText);
+        function clearTranslateInput() {
+            document.getElementById('custom-translate-input').value = '';
+            document.getElementById('custom-translate-output').innerText = '等待輸入華語...';
+        }
 
-        function speakCustomTranslation() {
-            const text = document.getElementById('custom-translation-box').innerText;
-            if(!text || text.startsWith("(")) { showToast('請先輸入想要翻譯的文字內容！'); return; }
-            
+        function toggleGuestFlip() {
+            isFlipped = !isFlipped;
+            const container = document.getElementById('translate-output-container');
+            if (isFlipped) {
+                container.classList.add('guest-flip-view', 'scale-110', 'bg-amber-50/40');
+                showToast('🔄 已為旅客翻轉畫面！可將手機放於櫃檯對談');
+            } else {
+                container.classList.remove('guest-flip-view', 'scale-110', 'bg-amber-50/40');
+            }
+        }
+
+        function speakCustomTranslatedText() {
+            const text = document.getElementById('custom-translate-output').innerText;
+            if(!text || text.includes('等待') || text.includes('翻譯中')) return;
             window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
             const langMapping = { en: 'en-US', ja: 'ja-JP', ko: 'ko-KR', th: 'th-TH', vi: 'vi-VN', id: 'id-ID' };
             utterance.lang = langMapping[state.currentTargetLang] || 'en-US';
-            utterance.rate = 0.85; // 放慢速度方便聆聽
+            utterance.rate = 0.88;
             window.speechSynthesis.speak(utterance);
-            showToast('🔊 真人發音播報中...');
+            showToast('🔊 智慧對談語音播放中...');
         }
 
-        function copyCustomTransText() {
-            const text = document.getElementById('custom-translation-box').innerText;
-            if(!text || text.startsWith("(")) return;
-            navigator.clipboard.writeText(text).then(() => showToast('翻譯文字已複製！'));
+        function copyTranslatedText() {
+            const text = document.getElementById('custom-translate-output').innerText;
+            if(!text || text.includes('等待')) return;
+            navigator.clipboard.writeText(text);
+            showToast('📋 翻譯結果已複製到剪貼簿！');
         }
 
-        // --- 排班月曆與班別完整功能 ---
+        function renderFixedCheatSheet() {
+            const container = document.getElementById('fixed-cheat-sheet-container');
+            container.innerHTML = '';
+            fixedCheatSheets.forEach((sheet, idx) => {
+                const foreignText = sheet[state.currentTargetLang];
+                const card = document.createElement('div');
+                card.className = "bg-[#FDFBF7] border border-[#EAE3D2] rounded-xl p-3.5 space-y-2";
+                card.innerHTML = `
+                    <div class="text-xs text-gray-500 font-bold">💡 華語：${sheet.ch}</div>
+                    <div class="text-sm font-black text-[#4A403A] bg-white p-2.5 rounded-lg border border-[#F4EFE6] select-all">${foreignText}</div>
+                    <button onclick="speakFixedText(${idx})" class="w-full py-1.5 bg-amber-500 text-white rounded-lg text-xs font-bold shadow-2xs flex items-center justify-center space-x-1 cursor-pointer">
+                        <i class="fa-solid fa-volume-high"></i> <span>播放此句音量</span>
+                    </button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function speakFixedText(index) {
+            const text = fixedCheatSheets[index][state.currentTargetLang];
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            const langMapping = { en: 'en-US', ja: 'ja-JP', ko: 'ko-KR', th: 'th-TH', vi: 'vi-VN', id: 'id-ID' };
+            utterance.lang = langMapping[state.currentTargetLang] || 'en-US';
+            utterance.rate = 0.85;
+            window.speechSynthesis.speak(utterance);
+            showToast('🔊 語音同步播報中...');
+        }
+
+        // --- 排班月曆模組 (更新：精美半透明金元寶底襯 + 薪一字極簡化) ---
         function renderCalendar() {
             const container = document.getElementById('calendar-days'); container.innerHTML = '';
             const year = currentCalendarDate.getFullYear();
             const month = currentCalendarDate.getMonth();
             document.getElementById('calendar-month-year').innerText = `${year}年 ${String(month + 1).padStart(2, '0')}月`;
 
-            for(let d=1; d<=30; d++) {
-                const dateKey = `${year}-${month + 1}-${d}`;
+            const firstDayIndex = new Date(year, month, 1).getDay();
+            const totalDays = new Date(year, month + 1, 0).getDate();
+
+            for (let i = 0; i < firstDayIndex; i++) {
+                container.appendChild(document.createElement('div'));
+            }
+
+            for (let d = 1; d <= totalDays; d++) {
+                const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
                 const btn = document.createElement('button');
-                btn.className = "p-1.5 rounded-xl text-xs font-bold border border-[#F4EFE6] min-h-[52px] bg-white flex flex-col justify-between items-center cursor-pointer";
+                btn.className = "p-2 rounded-2xl border text-sm font-bold flex flex-col items-center justify-between min-h-[64px] transition-all cursor-pointer bg-[#FDFBF7] border-[#F4EFE6] hover:bg-[#F4EFE6] relative";
                 
-                let dateNumSpan = document.createElement('span');
-                dateNumSpan.innerText = d;
-                btn.appendChild(dateNumSpan);
-
-                if(d === 5) btn.classList.add('payday-glow');
-
-                // 渲染劃班備註
-                if(state.duties[dateKey]) {
-                    let dutySpan = document.createElement('span');
-                    dutySpan.className = "text-[9px] px-1 rounded block mt-0.5 scale-90 font-black ";
-                    if(state.duties[dateKey] === '休假') dutySpan.className += "bg-emerald-100 text-emerald-800";
-                    else if(state.duties[dateKey] === '早班') dutySpan.className += "bg-amber-100 text-amber-900";
-                    else if(state.duties[dateKey] === '中班') dutySpan.className += "bg-orange-100 text-orange-900";
-                    else if(state.duties[dateKey] === '晚班') dutySpan.className += "bg-purple-100 text-purple-900";
-                    dutySpan.innerText = state.duties[dateKey];
-                    btn.appendChild(dutySpan);
+                const today = new Date();
+                if (year === today.getFullYear() && month === today.getMonth() && d === today.getDate()) {
+                    btn.classList.add('border-amber-500', 'bg-amber-50/50');
                 }
 
+                // 核心優化：10號發薪日視覺大翻新
+                if (d === 10) {
+                    btn.classList.add('payday-glow');
+                    // 塞入底部放大半透明的金元寶圖案，絕不遮擋文字
+                    const ingotIcon = document.createElement('div');
+                    ingotIcon.className = "absolute text-amber-500 opacity-15 text-4xl bottom-0 right-1 pointer-events-none z-0";
+                    ingotIcon.innerHTML = `<i class="fa-solid fa-coins"></i>`;
+                    btn.appendChild(ingotIcon);
+                }
+
+                // 日期數字
+                const dateNumSpan = document.createElement('span');
+                dateNumSpan.innerText = d;
+                dateNumSpan.className = "text-[#4A403A] font-bold z-10";
+                btn.appendChild(dateNumSpan);
+
+                // 班別假別與發薪圖章渲染
+                const infoContainer = document.createElement('div');
+                infoContainer.className = "flex flex-col items-center space-y-0.5 z-10 w-full";
+
+                if (state.duties[dateKey]) {
+                    const dutySpan = document.createElement('span');
+                    const duty = state.duties[dateKey];
+                    dutySpan.innerText = duty;
+                    if (duty.includes('早')) dutySpan.className = "text-[10px] font-black px-1.5 py-0.5 rounded-md bg-amber-100 text-amber-800";
+                    else if (duty.includes('中')) dutySpan.className = "text-[10px] font-black px-1.5 py-0.5 rounded-md bg-orange-100 text-orange-800";
+                    else if (duty.includes('晚')) dutySpan.className = "text-[10px] font-black px-1.5 py-0.5 rounded-md bg-purple-100 text-purple-800";
+                    else if (duty === '休') dutySpan.className = "text-[10px] font-black px-1.5 py-0.5 rounded-md bg-emerald-100 text-emerald-800";
+                    else dutySpan.className = "text-[10px] font-black px-1.5 py-0.5 rounded-md bg-rose-100 text-rose-800";
+                    infoContainer.appendChild(dutySpan);
+                }
+
+                // 核心優化：發薪日改為「薪」一字，外加精美亮麗小標籤
+                if (d === 10) {
+                    const payLabel = document.createElement('span');
+                    payLabel.innerText = "薪";
+                    payLabel.className = "text-[10px] font-black px-1.5 py-0.2 rounded-full bg-amber-500 text-white shadow-2xs animate-bounce";
+                    infoContainer.appendChild(payLabel);
+                }
+
+                if (infoContainer.children.length === 0) {
+                    const emptySpan = document.createElement('span');
+                    emptySpan.className = "h-4";
+                    infoContainer.appendChild(emptySpan);
+                }
+
+                btn.appendChild(infoContainer);
                 btn.onclick = () => openDutyPanel(dateKey);
                 container.appendChild(btn);
             }
         }
-        function changeMonth(dir) {
-            currentCalendarDate.setMonth(currentCalendarDate.getMonth() + dir);
+
+        function changeMonth(direction) {
+            currentCalendarDate.setMonth(currentCalendarDate.getMonth() + direction);
             renderCalendar();
         }
+
         function openDutyPanel(dateKey) {
             activeSelectedDateKey = dateKey;
-            document.getElementById('selected-date-str').innerText = dateKey;
+            document.getElementById('selected-date-str').innerText = dateKey.replace(/-/g, '/');
             document.getElementById('duty-panel').classList.remove('hidden');
-        }
-        function closeDutyPanel() { document.getElementById('duty-panel').classList.add('hidden'); }
-        function setDuty(type) {
-            if(!activeSelectedDateKey) return;
-            state.duties[activeSelectedDateKey] = type;
-            localStorage.setItem('fe_duties_v4', JSON.stringify(state.duties));
-            renderCalendar(); closeDutyPanel(); showToast('劃班成功！已儲存');
-        }
-        function clearDuty() {
-            if(!activeSelectedDateKey) return;
-            delete state.duties[activeSelectedDateKey];
-            localStorage.setItem('fe_duties_v4', JSON.stringify(state.duties));
-            renderCalendar(); closeDutyPanel(); showToast('已清除該日班別');
+            document.getElementById('duty-panel').scrollIntoView({ behavior: 'smooth' });
         }
 
-        // --- 即時公告欄完整功能 ---
+        function closeDutyPanel() {
+            document.getElementById('duty-panel').classList.add('hidden');
+            activeSelectedDateKey = null;
+        }
+
+        function setDuty(dutyValue) {
+            if (!activeSelectedDateKey) return;
+            state.duties[activeSelectedDateKey] = dutyValue;
+            localStorage.setItem('fe_duties_v6', JSON.stringify(state.duties));
+            renderCalendar();
+            showToast(`已將 ${activeSelectedDateKey} 設定為【${dutyValue}】`);
+            closeDutyPanel();
+        }
+
+        function clearDuty() {
+            if (!activeSelectedDateKey) return;
+            delete state.duties[activeSelectedDateKey];
+            localStorage.setItem('fe_duties_v6', JSON.stringify(state.duties));
+            renderCalendar();
+            showToast(`已清除 ${activeSelectedDateKey} 的班別紀錄`);
+            closeDutyPanel();
+        }
+
+        // --- 館內即時公告欄模組 ---
         function toggleAnnounceEdit() {
             announceEditMode = !announceEditMode;
-            document.getElementById('announce-edit-zone').classList.toggle('hidden', !announceEditMode);
+            const zone = document.getElementById('announce-edit-zone');
+            const btn = document.getElementById('btn-announce-mode');
+            if (announceEditMode) { zone.classList.remove('hidden'); btn.innerHTML = `<i class="fa-solid fa-xmark mr-1"></i>關閉管理`; }
+            else { zone.classList.add('hidden'); btn.innerHTML = `<i class="fa-solid fa-gear mr-1"></i>管理公告`; }
         }
+
         function addAnnouncement() {
             const title = document.getElementById('announce-input-title').value.trim();
             const content = document.getElementById('announce-input-content').value.trim();
             const isUrgent = document.getElementById('announce-input-urgent').checked;
-            if(!title || !content) { showToast('請填寫完整公告內容！'); return; }
+            if (!title || !content) { showToast('⚠️ 請填寫公告標題與內容！'); return; }
+            state.announces.unshift({ id: Date.now(), title, content, urgent: isUrgent, date: new Date().toLocaleDateString('zh-TW') });
+            localStorage.setItem('fe_announces_v6', JSON.stringify(state.announces));
+            document.getElementById('announce-input-title').value = ''; document.getElementById('announce-input-content').value = ''; document.getElementById('announce-input-urgent').checked = false;
+            renderAnnouncements(); toggleAnnounceEdit(); showToast('🎉 館內最新公告發布成功！');
+        }
 
-            state.announces.push({ id: Date.now(), title, content, urgent: isUrgent });
-            localStorage.setItem('fe_announces_v4', JSON.stringify(state.announces));
-            renderAnnouncements();
-            document.getElementById('announce-input-title').value = '';
-            document.getElementById('announce-input-content').value = '';
-            document.getElementById('announce-input-urgent').checked = false;
-            toggleAnnounceEdit(); showToast('公告已發布！');
+        function deleteAnnouncement(id) {
+            state.announces = state.announces.filter(item => item.id !== id);
+            localStorage.setItem('fe_announces_v6', JSON.stringify(state.announces));
+            renderAnnouncements(); showToast('已刪除該筆公告');
         }
-        function deleteAnnounce(id) {
-            state.announces = state.announces.filter(a => a.id !== id);
-            localStorage.setItem('fe_announces_v4', JSON.stringify(state.announces));
-            renderAnnouncements(); showToast('公告已刪除');
-        }
+
         function renderAnnouncements() {
             const container = document.getElementById('announce-list-container'); container.innerHTML = '';
-            if(state.announces.length === 0) {
-                container.innerHTML = `<p class="text-xs text-[#BCB3A8] text-center py-2">目前沒有任何緊急公告</p>`; return;
-            }
-            state.announces.forEach(a => {
-                const item = document.createElement('div');
-                item.className = `p-3 rounded-2xl text-xs border relative ${a.urgent ? 'bg-rose-50 border-rose-200 text-rose-950 font-bold' : 'bg-[#FDFBF7] border-gray-100'}`;
-                item.innerHTML = `
-                    <div class="flex justify-between items-center font-bold mb-0.5">
-                        <span>${a.urgent ? '🚨 [緊急宣導] ' : ''}${a.title}</span>
-                        <button onclick="deleteAnnounce(${a.id})" class="text-gray-400 hover:text-rose-600 cursor-pointer"><i class="fa-solid fa-trash-can"></i></button>
+            if (state.announces.length === 0) { container.innerHTML = `<p class="text-xs text-gray-400 italic text-center py-4">目前暫無館內公告事項</p>`; return; }
+            state.announces.forEach(item => {
+                const card = document.createElement('div');
+                card.className = item.urgent ? "bg-rose-50/70 border border-rose-200 rounded-2xl p-4 space-y-1 relative" : "bg-[#FDFBF7] border border-[#EAE3D2] rounded-2xl p-4 space-y-1 relative";
+                card.innerHTML = `
+                    <div class="flex items-center space-x-1.5">
+                        ${item.urgent ? '<span class="text-xs bg-rose-600 text-white font-black px-1.5 py-0.5 rounded-md animate-pulse">緊急</span>' : ''}
+                        <h4 class="text-sm font-black ${item.urgent ? 'text-rose-900' : 'text-[#4A403A]'}">${item.title}</h4>
+                        <span class="text-[10px] text-gray-400 font-bold ml-auto">${item.date}</span>
                     </div>
-                    <p class="text-[11px] opacity-90 leading-relaxed">${a.content}</p>
+                    <p class="text-xs ${item.urgent ? 'text-rose-800 font-medium' : 'text-[#6E6157]'} leading-relaxed whitespace-pre-wrap">${item.content}</p>
+                    <button onclick="deleteAnnouncement(${item.id})" class="absolute top-2 right-2 text-xs text-gray-400 hover:text-rose-600 p-1 cursor-pointer"><i class="fa-solid fa-trash-can"></i></button>
                 `;
-                container.appendChild(item);
+                container.appendChild(card);
             });
         }
 
-        // --- 查房連選模組功能 ---
-        function initRoomsModule() {
-            const tabContainer = document.getElementById('floor-tabs-container'); tabContainer.innerHTML = '';
+        // --- 直覺連選查房工具模組 ---
+        function initRoomsModule() { renderFloorTabs(); renderRoomsMatrix(); }
+        function renderFloorTabs() {
+            const container = document.getElementById('floor-tabs-container'); container.innerHTML = '';
             Object.keys(hotelRoomsConfig).forEach(floor => {
-                const btn = document.createElement('button');
-                btn.id = `floor-tab-${floor}`; btn.innerText = floor;
-                btn.className = "px-4 py-1.5 rounded-xl text-xs font-bold shrink-0 cursor-pointer border border-[#EAE3D2] bg-white";
-                btn.onclick = () => selectFloor(floor);
-                tabContainer.appendChild(btn);
-            });
-            selectFloor(state.selectedFloor);
-        }
-        function selectFloor(floor) {
-            state.selectedFloor = floor;
-            Object.keys(hotelRoomsConfig).forEach(f => {
-                const btn = document.getElementById(`floor-tab-${f}`);
-                if(f === floor) btn.className = "px-4 py-1.5 rounded-xl text-xs font-bold shrink-0 bg-[#8C7E74] text-white border-[#8C7E74]";
-                else btn.className = "px-4 py-1.5 rounded-xl text-xs font-bold shrink-0 bg-white text-[#6E6157] border-[#EAE3D2] hover:bg-[#F4EFE6]";
-            });
-            renderRoomsGrid();
-        }
-        function renderRoomsGrid() {
-            const grid = document.getElementById('rooms-matrix-grid'); grid.innerHTML = '';
-            (hotelRoomsConfig[state.selectedFloor] || []).forEach(roomNum => {
-                const roomInfo = state.roomStates[roomNum] || { status: "OK房", note: "" };
-                const btn = document.createElement('button');
-                btn.className = "p-2 rounded-2xl border text-center transition-all flex flex-col items-center justify-center relative cursor-pointer min-h-[64px]";
-                
-                let colorClass = "bg-emerald-50 text-emerald-800 border-emerald-200";
-                if (roomInfo.status === "入住中") colorClass = "bg-blue-50 text-blue-800 border-blue-200";
-                else if (roomInfo.status === "待掃房") colorClass = "bg-orange-50 text-orange-800 border-orange-200";
-                else if (roomInfo.status === "待查房") colorClass = "bg-purple-50 text-purple-800 border-purple-200";
-                else if (roomInfo.status === "故障房") colorClass = "bg-rose-50 text-rose-800 border-rose-300 font-bold";
-                
-                if(state.activeNoteRoom === roomNum) colorClass += " ring-2 ring-amber-600 ring-offset-1 scale-98";
-                btn.className += ` ${colorClass}`;
-                
-                let noteIndicator = roomInfo.note ? `<span class="text-[8px] bg-white/80 px-1 rounded truncate max-w-full text-rose-700 mt-0.5 block scale-90">${roomInfo.note}</span>` : "";
-                btn.innerHTML = `<span class="text-xs font-black tracking-wide">${roomNum}</span><span class="text-[9px] opacity-80 font-bold">${roomInfo.status}</span>${noteIndicator}`;
-                btn.onclick = () => cycleRoomStatus(roomNum);
-                grid.appendChild(btn);
+                const btn = document.createElement('button'); btn.innerText = floor;
+                btn.className = floor === state.selectedFloor ? "px-5 py-2 rounded-xl text-sm font-black bg-amber-600 text-white shadow-xs cursor-pointer shrink-0" : "px-5 py-2 rounded-xl text-sm font-bold bg-[#FDFBF7] border border-[#EAE3D2] text-[#6E6157] hover:bg-[#F4EFE6] cursor-pointer shrink-0";
+                btn.onclick = () => { state.selectedFloor = floor; renderFloorTabs(); renderRoomsMatrix(); };
+                container.appendChild(btn);
             });
         }
-        function cycleRoomStatus(roomNum) {
-            state.activeNoteRoom = roomNum;
-            document.getElementById('active-note-target').innerText = `🎯 正在為 【${roomNum}房】加註`;
-            if (!state.roomStates[roomNum]) state.roomStates[roomNum] = { status: "OK房", note: "" };
-            let idx = (statusSequence.indexOf(state.roomStates[roomNum].status) + 1) % statusSequence.length;
-            state.roomStates[roomNum].status = statusSequence[idx];
-            localStorage.setItem('fe_room_states_v4', JSON.stringify(state.roomStates));
-            renderRoomsGrid();
+
+        function renderRoomsMatrix() {
+            const container = document.getElementById('rooms-matrix-grid'); container.innerHTML = '';
+            const rooms = hotelRoomsConfig[state.selectedFloor] || [];
+            rooms.forEach(roomNum => {
+                if (!state.roomStates[roomNum]) state.roomStates[roomNum] = { status: "OK房", note: "" };
+                const roomData = state.roomStates[roomNum];
+                const card = document.createElement('button');
+                card.className = "p-3 rounded-2xl border flex flex-col items-center justify-center min-h-[76px] transition-all relative cursor-pointer shadow-2xs ";
+                if (roomData.status === "OK房") card.classList.add("bg-emerald-50", "border-emerald-200", "text-emerald-800");
+                else if (roomData.status === "入住中") card.classList.add("bg-blue-50", "border-blue-200", "text-blue-700");
+                else if (roomData.status === "待掃房") card.classList.add("bg-orange-50", "border-orange-200", "text-orange-700");
+                else if (roomData.status === "待查房") card.classList.add("bg-purple-50", "border-purple-200", "text-purple-700");
+                else if (roomData.status === "故障房") card.classList.add("bg-rose-50", "border-rose-200", "text-rose-700");
+
+                const hasNoteDot = roomData.note ? '<span class="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-600 rounded-full"></span>' : '';
+                card.innerHTML = `${hasNoteDot}<span class="text-base font-black tracking-wide">${roomNum}</span><span class="text-[11px] font-bold opacity-85 mt-0.5">${roomData.status}</span>`;
+                
+                card.onclick = () => {
+                    let nextIndex = (statusSequence.indexOf(roomData.status) + 1) % statusSequence.length;
+                    state.roomStates[roomNum].status = statusSequence[nextIndex];
+                    saveRoomStatesToStorage(); renderRoomsMatrix();
+                    if (state.activeNoteRoom === roomNum) setActiveNoteTarget(roomNum);
+                };
+                card.ondblclick = (e) => { e.preventDefault(); setActiveNoteTarget(roomNum); };
+                container.appendChild(card);
+            });
         }
-        function addQuickNoteToActive(text) {
-            if(!state.activeNoteRoom) { showToast('請先點擊上方任何房號！'); return; }
-            let curr = state.roomStates[state.activeNoteRoom].note || "";
-            state.roomStates[state.activeNoteRoom].note = curr ? `${curr}、${text}` : text;
-            localStorage.setItem('fe_room_states_v4', JSON.stringify(state.roomStates));
-            renderRoomsGrid(); showToast(`已加註缺失`);
+
+        function setActiveNoteTarget(roomNum) {
+            state.activeNoteRoom = roomNum; const roomData = state.roomStates[roomNum];
+            document.getElementById('active-note-target').innerText = `🏠 ${roomNum} 房 (${roomData.status})`;
+            const input = document.getElementById('room-custom-note-input'); input.disabled = false; input.value = roomData.note || '';
+            document.getElementById('btn-save-custom-note').disabled = false; input.focus();
         }
+
+        function saveCustomRoomNote() {
+            if (!state.activeNoteRoom) return;
+            state.roomStates[state.activeNoteRoom].note = document.getElementById('room-custom-note-input').value.trim();
+            saveRoomStatesToStorage(); renderRoomsMatrix(); showToast(`✍️ ${state.activeNoteRoom} 房備註儲存成功！`);
+        }
+
+        function addQuickNoteToActive(quickText) {
+            if (!state.activeNoteRoom) { showToast('💡 請先雙擊上方房號，再加入備註！'); return; }
+            let curr = state.roomStates[state.activeNoteRoom].note || '';
+            state.roomStates[state.activeNoteRoom].note = curr + (curr ? ' ' : '') + quickText;
+            document.getElementById('room-custom-note-input').value = state.roomStates[state.activeNoteRoom].note;
+            saveRoomStatesToStorage(); renderRoomsMatrix(); showToast(`已新增：${quickText}`);
+        }
+
         function clearActiveRoomNote() {
-            if(!state.activeNoteRoom) return;
-            state.roomStates[state.activeNoteRoom].note = "";
-            localStorage.setItem('fe_room_states_v4', JSON.stringify(state.roomStates));
-            renderRoomsGrid(); showToast(`已清除備註`);
+            if (!state.activeNoteRoom) return; state.roomStates[state.activeNoteRoom].note = '';
+            document.getElementById('room-custom-note-input').value = ''; saveRoomStatesToStorage(); renderRoomsMatrix();
         }
+
         function resetAllRooms() {
-            if (confirm("⚠️ 確定要一鍵重置全館所有房態嗎？")) {
-                state.roomStates = {}; localStorage.setItem('fe_room_states_v4', JSON.stringify(state.roomStates));
-                state.activeNoteRoom = null; document.getElementById('active-note-target').innerText = "請先點擊上方任何房號";
-                renderRoomsGrid(); showToast('全館狀態已重置！');
+            if (confirm('確定要一鍵重置所有房號狀態與備註嗎？')) {
+                state.roomStates = {}; saveRoomStatesToStorage();
+                state.activeNoteRoom = null; document.getElementById('active-note-target').innerText = '請先雙擊上方房號';
+                document.getElementById('room-custom-note-input').value = ''; document.getElementById('room-custom-note-input').disabled = true;
+                document.getElementById('btn-save-custom-note').disabled = true; renderRoomsMatrix(); showToast('🧹 全館重置成功！');
             }
         }
+        function saveRoomStatesToStorage() { localStorage.setItem('fe_room_states_v6', JSON.stringify(state.roomStates)); }
 
-        // --- 交辦事項與會議助手功能 ---
+        // --- 今日交辦清單模組 ---
         function addTodoItem() {
-            const val = document.getElementById('todo-input').value.trim();
-            if(!val) return;
-            state.todos.push({ id: Date.now(), text: val, done: false });
-            localStorage.setItem('fe_todos_v4', JSON.stringify(state.todos));
-            document.getElementById('todo-input').value = ''; renderTodos();
+            const text = document.getElementById('todo-input').value.trim(); if (!text) return;
+            state.todos.push({ id: Date.now(), text, done: false });
+            localStorage.setItem('fe_todos_v6', JSON.stringify(state.todos)); document.getElementById('todo-input').value = ''; renderTodos();
         }
-        function toggleTodo(id) {
-            let item = state.todos.find(t => t.id === id);
-            if(item) item.done = !item.done;
-            localStorage.setItem('fe_todos_v4', JSON.stringify(state.todos));
-            renderTodos();
-        }
-        function deleteTodo(id) {
-            state.todos = state.todos.filter(t => t.id !== id);
-            localStorage.setItem('fe_todos_v4', JSON.stringify(state.todos));
-            renderTodos();
-        }
+        function toggleTodoItem(id) { state.todos = state.todos.map(t => t.id === id ? { ...t, done: !t.done } : t); localStorage.setItem('fe_todos_v6', JSON.stringify(state.todos)); renderTodos(); }
+        function deleteTodoItem(id) { state.todos = state.todos.filter(t => t.id !== id); localStorage.setItem('fe_todos_v6', JSON.stringify(state.todos)); renderTodos(); }
         function renderTodos() {
             const container = document.getElementById('checklist-container'); container.innerHTML = '';
-            if(state.todos.length === 0) {
-                container.innerHTML = `<p class="text-xs text-[#BCB3A8] text-center py-1">目前無交辦事項</p>`; return;
-            }
+            if (state.todos.length === 0) { container.innerHTML = `<p class="text-xs text-gray-400 italic text-center py-4">目前沒有交辦事項</p>`; return; }
             state.todos.forEach(t => {
-                const item = document.createElement('div');
-                item.className = "flex items-center justify-between p-2 bg-[#FDFBF7] rounded-xl border border-[#F4EFE6] text-xs";
-                item.innerHTML = `
-                    <label class="flex items-center space-x-2 cursor-pointer flex-1">
-                        <input type="checkbox" ${t.done ? 'checked' : ''} onchange="toggleTodo(${t.id})" class="accent-[#8C7E74]">
-                        <span class="${t.done ? 'line-through text-gray-400' : 'text-[#4A403A] font-medium'}">${t.text}</span>
-                    </label>
-                    <button onclick="deleteTodo(${t.id})" class="text-gray-300 hover:text-rose-500 cursor-pointer"><i class="fa-solid fa-circle-minus"></i></button>
-                `;
-                container.appendChild(item);
+                const row = document.createElement('div'); row.className = "flex items-center justify-between p-3 bg-[#FDFBF7] border border-[#EAE3D2] rounded-xl space-x-2";
+                row.innerHTML = `<label class="flex items-center space-x-2 flex-1 cursor-pointer"><input type="checkbox" ${t.done ? 'checked' : ''} onchange="toggleTodoItem(${t.id})" class="accent-amber-600 w-4 h-4 rounded"><span class="text-sm font-bold ${t.done ? 'line-through text-gray-400' : 'text-[#4A403A]'}">${t.text}</span></label><button onclick="deleteTodoItem(${t.id})" class="text-gray-400 hover:text-rose-600 p-1 text-xs"><i class="fa-solid fa-trash-can"></i></button>`;
+                container.appendChild(row);
             });
-        }
-        function saveMeetingSchedule() {
-            const title = document.getElementById('meet-title').value.trim();
-            const time = document.getElementById('meet-time').value;
-            if(!title || !time) return;
-            state.meetings.push({ id: Date.now(), title, time });
-            localStorage.setItem('fe_meetings_v4', JSON.stringify(state.meetings));
-            document.getElementById('meet-title').value = ''; document.getElementById('meet-time').value = '';
-            renderMeetings(); showToast('會議已排定');
-        }
-        function removeMeeting(id) {
-            state.meetings = state.meetings.filter(m => m.id !== id);
-            localStorage.setItem('fe_meetings_v4', JSON.stringify(state.meetings));
-            renderMeetings();
-        }
-        function renderMeetings() {
-            const container = document.getElementById('scheduled-meetings-box'); container.innerHTML = '';
-            if(state.meetings.length === 0) {
-                container.innerHTML = `<p class="text-[10px] text-[#BCB3A8] text-center py-1">今日無排定開會</p>`; return;
-            }
-            state.meetings.forEach(m => {
-                const item = document.createElement('div');
-                item.className = "flex items-center justify-between p-2 bg-[#FDFBF7] rounded-xl border border-[#F4EFE6] text-xs";
-                item.innerHTML = `<div><span class="font-mono bg-amber-100 text-amber-900 px-1 py-0.5 rounded text-[10px] font-bold mr-1.5">${m.time}</span><b>${m.title}</b></div>
-                <button onclick="removeMeeting(${m.id})" class="text-gray-300 hover:text-rose-500 cursor-pointer"><i class="fa-solid fa-xmark"></i></button>`;
-                container.appendChild(item);
-            });
-        }
-        function toggleTimer() {
-            if(timerInstance) {
-                clearInterval(timerInstance); timerInstance = null;
-                document.getElementById('btn-timer-start').innerText = "開始";
-            } else {
-                document.getElementById('btn-timer-start').innerText = "暫停";
-                timerInstance = setInterval(() => {
-                    if(timerSeconds <= 0) { clearInterval(timerInstance); timerInstance = null; alert('⏰ 開會時間結束！'); return; }
-                    timerSeconds--;
-                    let m = String(Math.floor(timerSeconds / 60)).padStart(2,'0');
-                    let s = String(timerSeconds % 60).padStart(2,'0');
-                    document.getElementById('timer-display').innerText = `${m}:${s}`;
-                }, 1000);
-            }
-        }
-        function resetTimer() {
-            clearInterval(timerInstance); timerInstance = null; timerSeconds = 300;
-            document.getElementById('timer-display').innerText = "05:00";
-            document.getElementById('btn-timer-start').innerText = "開始";
         }
 
-        // --- 公費記帳功能 ---
-        function addExpense() {
-            const title = document.getElementById('expense-title').value.trim();
-            const amt = parseFloat(document.getElementById('expense-amount').value);
-            if(!title || isNaN(amt)) return;
-            state.expenses.push({ id: Date.now(), title, amount: amt });
-            localStorage.setItem('fe_expenses_v4', JSON.stringify(state.expenses));
-            document.getElementById('expense-title').value = ''; document.getElementById('expense-amount').value = '';
-            renderExpenses(); showToast('記帳已儲存！');
+        // --- 開會與交接助手 ---
+        function saveMeetingSchedule() {
+            const title = document.getElementById('meet-title').value.trim(); const time = document.getElementById('meet-time').value;
+            if (!title || !time) { showToast('⚠️ 請填寫會議主旨與時間！'); return; }
+            state.meetings.push({ id: Date.now(), title, time }); state.meetings.sort((a, b) => a.time.localeCompare(b.time));
+            localStorage.setItem('fe_meetings_v6', JSON.stringify(state.meetings));
+            document.getElementById('meet-title').value = ''; document.getElementById('meet-time').value = ''; renderMeetings(); showToast('⏰ 行程已排入！');
         }
-        function deleteExpense(id) {
-            state.expenses = state.expenses.filter(e => e.id !== id);
-            localStorage.setItem('fe_expenses_v4', JSON.stringify(state.expenses));
-            renderExpenses();
-        }
-        function renderExpenses() {
-            const container = document.getElementById('expense-list'); container.innerHTML = '';
-            let total = 0;
-            if(state.expenses.length === 0) {
-                container.innerHTML = `<p class="text-[11px] text-[#BCB3A8] text-center">目前無代墊紀錄</p>`;
-                document.getElementById('expense-total-amount').innerText = "0"; return;
-            }
-            state.expenses.forEach(e => {
-                total += e.amount;
-                const item = document.createElement('div');
-                item.className = "flex justify-between items-center text-xs p-2 bg-[#FDFBF7] rounded-xl border border-[#F4EFE6]";
-                item.innerHTML = `<span>📂 ${e.title}</span><div class="space-x-2"><b class="text-amber-800">$${e.amount}</b>
-                <button onclick="deleteExpense(${e.id})" class="text-gray-300 hover:text-rose-500 cursor-pointer"><i class="fa-solid fa-trash-can"></i></button></div>`;
-                container.appendChild(item);
+        function deleteMeeting(id) { state.meetings = state.meetings.filter(m => m.id !== id); localStorage.setItem('fe_meetings_v6', JSON.stringify(state.meetings)); renderMeetings(); }
+        function renderMeetings() {
+            const container = document.getElementById('scheduled-meetings-box'); container.innerHTML = '';
+            if (state.meetings.length === 0) { container.innerHTML = `<p class="text-xs text-gray-400 italic text-center py-2">目前沒有預定會議</p>`; return; }
+            state.meetings.forEach(m => {
+                const div = document.createElement('div'); div.className = "flex items-center justify-between p-2.5 bg-amber-50/60 border border-amber-200 rounded-xl text-xs font-bold text-amber-900";
+                div.innerHTML = `<div class="flex items-center space-x-2"><i class="fa-regular fa-bell text-amber-600"></i><span class="font-mono bg-white px-1.5 py-0.5 rounded border border-amber-200 text-[#4A403A]">${m.time}</span><span>${m.title}</span></div><button onclick="deleteMeeting(${m.id})" class="text-gray-400 hover:text-rose-600 p-1"><i class="fa-solid fa-xmark"></i></button>`;
+                container.appendChild(div);
             });
-            document.getElementById('expense-total-amount').innerText = total;
+        }
+
+        // --- 公費記帳模組 ---
+        function addExpense() {
+            const title = document.getElementById('expense-title').value.trim(); const amount = parseFloat(document.getElementById('expense-amount').value);
+            if (!title || isNaN(amount) || amount <= 0) { showToast('⚠️ 請輸入正確的項目與金額！'); return; }
+            state.expenses.push({ id: Date.now(), title, amount, date: new Date().toLocaleDateString('zh-TW') });
+            localStorage.setItem('fe_expenses_v6', JSON.stringify(state.expenses));
+            document.getElementById('expense-title').value = ''; document.getElementById('expense-amount').value = ''; renderExpenses(); showToast('💰 記帳成功！');
+        }
+        function deleteExpense(id) { state.expenses = state.expenses.filter(e => e.id !== id); localStorage.setItem('fe_expenses_v6', JSON.stringify(state.expenses)); renderExpenses(); }
+        function renderExpenses() {
+            const container = document.getElementById('expense-list'); container.innerHTML = ''; let total = 0;
+            if (state.expenses.length === 0) { container.innerHTML = `<p class="text-xs text-gray-400 italic text-center py-4">本期尚無記帳紀錄</p>`; document.getElementById('expense-total-amount').innerText = '0'; return; }
+            state.expenses.forEach(e => {
+                total += e.amount; const row = document.createElement('div'); row.className = "flex items-center justify-between p-3 bg-[#FDFBF7] border border-[#EAE3D2] rounded-xl text-sm font-bold text-[#4A403A]";
+                row.innerHTML = `<div class="flex flex-col"><span>${e.title}</span><span class="text-[10px] text-gray-400 font-medium">${e.date}</span></div><div class="flex items-center space-x-3"><span class="text-amber-700 font-black">$${e.amount}</span><button onclick="deleteExpense(${e.id})" class="text-gray-400 hover:text-rose-600 p-1 text-xs"><i class="fa-solid fa-trash-can"></i></button></div>`;
+                container.appendChild(row);
+            });
+            document.getElementById('expense-total-amount').innerText = total.toLocaleString();
         }
     </script>
 </body>
