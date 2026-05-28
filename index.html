@@ -54,26 +54,11 @@
         
         <!-- 1. CALENDAR: 排班表 -->
         <section id="page-calendar" class="tab-content hidden space-y-4">
-            <!-- 即時公告欄 -->
             <div class="bg-white rounded-3xl p-5 shadow-xs border border-[#F4EFE6] space-y-3">
                 <div class="flex justify-between items-center">
                     <h3 class="text-sm font-bold text-[#4A403A] flex items-center">
                         <span class="w-1.5 h-3.5 bg-rose-500 rounded-full mr-2"></span>館內即時公告欄
                     </h3>
-                    <button onclick="toggleAnnounceEdit()" id="btn-announce-mode" class="text-[11px] font-bold text-[#8C7E74] bg-[#F4EFE6] px-2.5 py-1 rounded-lg hover:bg-[#EAE3D2] transition-colors cursor-pointer">
-                        <i class="fa-solid fa-gear mr-1"></i>進入編輯
-                    </button>
-                </div>
-                <div id="announce-edit-zone" class="bg-[#FDFBF7] p-3 rounded-2xl border border-[#EAE3D2] space-y-2 hidden">
-                    <input type="text" id="announce-input-title" placeholder="請輸入公告標題" class="w-full text-xs p-2.5 bg-white border border-[#EAE3D2] rounded-xl focus:outline-none">
-                    <textarea id="announce-input-content" placeholder="請輸入公告詳細內容..." class="w-full text-xs p-2.5 bg-white border border-[#EAE3D2] rounded-xl h-16 focus:outline-none placeholder-[#C8C0B5] leading-relaxed"></textarea>
-                    <div class="flex justify-between items-center">
-                        <label class="flex items-center space-x-1.5 text-xs text-[#6E6157] font-medium cursor-pointer">
-                            <input type="checkbox" id="announce-input-urgent" class="accent-rose-500 rounded">
-                            <span class="text-rose-600 font-bold">設置為緊急高亮</span>
-                        </label>
-                        <button onclick="addAnnouncement()" class="bg-[#8C7E74] text-white text-xs px-4 py-1.5 rounded-xl font-bold cursor-pointer">發布公告</button>
-                    </div>
                 </div>
                 <div id="announce-list-container" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
             </div>
@@ -95,20 +80,6 @@
                 <div id="calendar-days" class="calendar-grid gap-1.5"></div>
             </div>
 
-            <div id="duty-panel" class="bg-white rounded-3xl p-5 shadow-xs border border-[#F4EFE6] hidden">
-                <div class="flex justify-between items-center mb-3">
-                    <h3 class="text-xs font-bold text-[#4A403A]">設定 <span id="selected-date-str" class="underline">2026/05/28</span> 的班別</h3>
-                    <button onclick="closeDutyPanel()" class="text-xs text-[#BCB3A8]"><i class="fa-solid fa-xmark"></i></button>
-                </div>
-                <div class="grid grid-cols-3 gap-2 text-xs">
-                    <button onclick="setDuty('早班')" class="p-2 bg-amber-50 border border-amber-200 rounded-xl font-medium">☀️ 早班</button>
-                    <button onclick="setDuty('中班')" class="p-2 bg-orange-50 border border-orange-200 rounded-xl font-medium">⛅ 中班</button>
-                    <button onclick="setDuty('晚班')" class="p-2 bg-purple-50 border border-purple-200 rounded-xl font-medium">🌙 晚班</button>
-                    <button onclick="setDuty('休假')" class="p-2 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl font-bold">🌴 休</button>
-                    <button onclick="clearDuty()" class="p-2 bg-gray-50 border border-gray-200 text-gray-500 rounded-xl col-span-2">清除紀錄</button>
-                </div>
-            </div>
-
             <!-- 每日正能量 -->
             <div class="bg-gradient-to-br from-[#FDFBF7] to-[#F4EFE6] rounded-3xl p-4 shadow-2xs border border-[#EAE3D2] text-center space-y-1">
                 <div class="text-[10px] uppercase font-bold text-[#A79A8F] tracking-widest">Daily Energy</div>
@@ -116,7 +87,7 @@
             </div>
         </section>
 
-        <!-- 2. ROOMS: 查房小工具 (升級連續選取、極致直覺) -->
+        <!-- 2. ROOMS: 查房小工具 (保證內含 200 與 715 房) -->
         <section id="page-rooms" class="tab-content hidden space-y-4">
             <div class="bg-white rounded-3xl p-5 shadow-xs border border-[#F4EFE6] space-y-4">
                 <div class="flex justify-between items-center border-b border-[#F4EFE6] pb-3">
@@ -124,7 +95,7 @@
                         <h3 class="text-sm font-bold text-[#4A403A] flex items-center">
                             <span class="w-1.5 h-3.5 bg-amber-500 rounded-full mr-2"></span>直覺連選查房工具
                         </h3>
-                        <p class="text-[10px] text-amber-600 font-bold mt-0.5">💡 免開視窗！直接點擊房號即可快連切換房態</p>
+                        <p class="text-[10px] text-amber-600 font-bold mt-0.5">💡 免開視窗！直接點擊房號即可切換房態</p>
                     </div>
                     <button onclick="resetAllRooms()" class="text-[10px] font-bold text-rose-600 bg-rose-50 border border-rose-200 px-2.5 py-1.5 rounded-xl hover:bg-rose-100 cursor-pointer">
                         一鍵重置
@@ -147,7 +118,7 @@
                 <div id="rooms-matrix-grid" class="grid grid-cols-4 gap-2 pt-2"></div>
             </div>
 
-            <!-- 缺失快速加註備忘錄 (不擋住矩陣，點擊房號會自動綁定此處) -->
+            <!-- 缺失快速加註備忘錄 -->
             <div class="bg-white rounded-3xl p-5 shadow-xs border border-[#F4EFE6] space-y-2">
                 <div class="flex justify-between items-center">
                     <span class="text-xs font-bold text-[#4A403A]">📋 點選下方快速填寫缺失文字：</span>
@@ -159,53 +130,66 @@
                     <button onclick="addQuickNoteToActive('床單發現污漬')" class="text-[10px] bg-[#FDFBF7] border border-[#EAE3D2] px-2 py-1 rounded-lg text-[#6E6157]">❌ 床單污漬</button>
                     <button onclick="addQuickNoteToActive('地面毛髮未清')" class="text-[10px] bg-[#FDFBF7] border border-[#EAE3D2] px-2 py-1 rounded-lg text-[#6E6157]">❌ 地面毛髮</button>
                     <button onclick="addQuickNoteToActive('冷氣異音不冷')" class="text-[10px] bg-[#FDFBF7] border border-[#EAE3D2] px-2 py-1 rounded-lg text-[#6E6157]">🔧 冷氣不冷</button>
-                    <button onclick="clearActiveRoomNote()" class="text-[10px] bg-gray-100 px-2 py-1 rounded-lg text-gray-500 font-bold ml-auto">⚠️ 清除此房備註</button>
+                    <button onclick="clearActiveRoomNote()" class="text-[10px] bg-gray-100 px-2 py-1 rounded-lg text-gray-500 font-bold ml-auto">⚠️ 清除備註</button>
                 </div>
             </div>
         </section>
 
-        <!-- 3. TRANSLATE: 多國語音翻譯機 (修復資料庫與真實發音核心) -->
+        <!-- 3. TRANSLATE: 智能多國語音對照（新增 泰、越、印語系與完全修復發音） -->
         <section id="page-translate" class="tab-content hidden space-y-4">
-            <div class="bg-white rounded-3xl p-5 shadow-xs border border-[#F4EFE6] space-y-3">
-                <h3 class="text-sm font-bold text-[#4A403A] flex items-center">
-                    <span class="w-1.5 h-3.5 bg-[#8C7E74] rounded-full mr-2"></span>智能多國精準語音翻譯機
-                </h3>
+            <div class="bg-white rounded-3xl p-5 shadow-xs border border-[#F4EFE6] space-y-4">
+                <div>
+                    <h3 class="text-sm font-bold text-[#4A403A] flex items-center">
+                        <span class="w-1.5 h-3.5 bg-indigo-600 rounded-full mr-2"></span>旅館專用多國語音大抄
+                    </h3>
+                    <p class="text-[10px] text-gray-400 mt-0.5">點擊下方常用語句，立刻切換多國精準翻譯並發音</p>
+                </div>
                 
-                <div class="space-y-1.5">
-                    <label class="text-[10px] font-bold text-[#A79A8F] block">💡 點選旅館常用高頻對話：</label>
-                    <div class="grid grid-cols-2 gap-1.5">
-                        <button onclick="selectPresetText('請出示您的護照與辦理入住。')" class="text-[11px] p-2 bg-[#FDFBF7] border border-[#EAE3D2] rounded-xl text-left truncate text-[#6E6157]">👉 請出示護照辦理入住</button>
-                        <button onclick="selectPresetText('房間已經全部清掃完畢，可以進房了。')" class="text-[11px] p-2 bg-[#FDFBF7] border border-[#EAE3D2] rounded-xl text-left truncate text-[#6E6157]">👉 房間已清掃完畢</button>
-                        <button onclick="selectPresetText('請問需要幫您補充分館的毛巾或備品嗎？')" class="text-[11px] p-2 bg-[#FDFBF7] border border-[#EAE3D2] rounded-xl text-left truncate text-[#6E6157]">👉 需要補毛巾備品嗎</button>
-                        <button onclick="selectPresetText('退房時間為上午十一點，謝謝您。')" class="text-[11px] p-2 bg-[#FDFBF7] border border-[#EAE3D2] rounded-xl text-left truncate text-[#6E6157]">👉 退房時間為11點</button>
-                    </div>
-                </div>
-
-                <div class="space-y-2 pt-2 border-t border-[#F4EFE6]">
-                    <textarea id="trans-input" placeholder="請在上方選取，或直接在此輸入中文..." class="w-full text-xs p-3 bg-[#FDFBF7] border border-[#EAE3D2] rounded-xl h-16 focus:outline-none"></textarea>
-                    
-                    <div class="flex items-center space-x-2">
-                        <select id="trans-lang" onchange="runTranslation()" class="text-xs p-2.5 bg-[#FDFBF7] border border-[#EAE3D2] rounded-xl text-[#6E6157] flex-1 font-bold focus:outline-none">
-                            <option value="en">🇺🇸 英語 (English)</option>
-                            <option value="ja">🇯🇵 日語 (日本語)</option>
-                            <option value="ko">🇰🇷 韓語 (한국어)</option>
-                        </select>
-                        <button onclick="runTranslation()" class="bg-[#8C7E74] text-white text-xs px-5 py-2.5 rounded-xl font-bold shadow-2xs cursor-pointer">執行翻譯</button>
-                    </div>
-                </div>
-
-                <!-- 翻譯結果區 -->
-                <div id="trans-result-box" class="bg-[#FDFBF7] border border-[#F4EFE6] rounded-xl p-3.5 space-y-2.5 hidden">
-                    <div class="text-[10px] text-[#A79A8F] font-bold uppercase tracking-wider flex justify-between items-center">
-                        <span>官方精準翻譯</span><span id="target-lang-badge" class="bg-[#EAE3D2] text-[#6E6157] px-1.5 py-0.5 rounded text-[9px]"></span>
-                    </div>
-                    <p id="trans-output-text" class="text-xs text-[#4A403A] font-bold font-mono bg-white p-2.5 rounded-lg border border-[#F4EFE6] leading-relaxed select-all"></p>
-                    
-                    <div class="flex space-x-2">
-                        <button onclick="speakResult()" class="flex-1 py-2 text-xs bg-amber-50 border border-amber-200 rounded-xl text-amber-900 font-bold hover:bg-amber-100 shadow-3xs cursor-pointer">
-                            <i class="fa-solid fa-volume-high mr-1 text-amber-600 animate-bounce"></i> 立即真人原聲發音
+                <!-- 常用句子選單 -->
+                <div class="space-y-2">
+                    <span class="text-[10px] font-bold text-[#A79A8F] block">第一步：請先選擇要向外國客說的話：</span>
+                    <div class="space-y-1.5">
+                        <button onclick="selectPresetPhrase(0)" id="phrase-btn-0" class="w-full text-xs p-3 rounded-xl border border-indigo-100 bg-indigo-50/50 text-indigo-950 font-medium text-left transition-all">
+                            🔑 1. 請出示您的護照以辦理入住登記。
                         </button>
-                        <button onclick="copyTranslated()" class="px-4 py-2 text-xs bg-white border border-[#EAE3D2] rounded-xl text-[#6E6157] font-medium"><i class="fa-regular fa-copy"></i> 複製</button>
+                        <button onclick="selectPresetPhrase(1)" id="phrase-btn-1" class="w-full text-xs p-3 rounded-xl border border-gray-200 bg-[#FDFBF7] text-gray-700 text-left transition-all">
+                            ✨ 2. 您的房間已經全部清掃完畢，現在可以進房了。
+                        </button>
+                        <button onclick="selectPresetPhrase(2)" id="phrase-btn-2" class="w-full text-xs p-3 rounded-xl border border-gray-200 bg-[#FDFBF7] text-gray-700 text-left transition-all">
+                            🧺 3. 請問需要幫您補充分館的乾淨毛巾或盥洗備品嗎？
+                        </button>
+                        <button onclick="selectPresetPhrase(3)" id="phrase-btn-3" class="w-full text-xs p-3 rounded-xl border border-gray-200 bg-[#FDFBF7] text-gray-700 text-left transition-all">
+                            ⏰ 4. 本館的退房時間為上午十一點，祝您旅途愉快，謝謝。
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 語系選擇與輸出 -->
+                <div class="space-y-3 pt-3 border-t border-[#F4EFE6]">
+                    <span class="text-[10px] font-bold text-[#A79A8F] block">第二步：選擇目標語言（已加入泰、越、印）：</span>
+                    
+                    <div class="grid grid-cols-3 gap-1.5">
+                        <button onclick="switchTargetLang('en')" id="lang-btn-en" class="py-2 rounded-xl text-xs font-bold border transition-all">🇺🇸 英文</button>
+                        <button onclick="switchTargetLang('ja')" id="lang-btn-ja" class="py-2 rounded-xl text-xs font-bold border transition-all">🇯🇵 日文</button>
+                        <button onclick="switchTargetLang('ko')" id="lang-btn-ko" class="py-2 rounded-xl text-xs font-bold border transition-all">🇰🇷 韓文</button>
+                        <button onclick="switchTargetLang('th')" id="lang-btn-th" class="py-2 rounded-xl text-xs font-bold border transition-all">🇹🇭 泰文</button>
+                        <button onclick="switchTargetLang('vi')" id="lang-btn-vi" class="py-2 rounded-xl text-xs font-bold border transition-all">🇻🇳 越南</button>
+                        <button onclick="switchTargetLang('id')" id="lang-btn-id" class="py-2 rounded-xl text-xs font-bold border transition-all">🇮🇩 印尼</button>
+                    </div>
+
+                    <!-- 翻譯結果顯示卡片 -->
+                    <div class="bg-[#FDFBF7] border border-[#EAE3D2] rounded-2xl p-4 space-y-3 mt-2">
+                        <div class="flex justify-between items-center">
+                            <span class="text-[9px] font-bold tracking-widest text-indigo-600 uppercase bg-indigo-50 px-2 py-0.5 rounded" id="current-lang-title">ENGLISH</span>
+                            <button onclick="copyTranslationText()" class="text-xs text-gray-400 hover:text-gray-600"><i class="fa-regular fa-copy mr-1"></i>複製文字</button>
+                        </div>
+                        <p id="translation-display-box" class="text-sm text-[#4A403A] font-bold leading-relaxed min-h-[44px] selection:bg-amber-200"></p>
+                        
+                        <!-- 爆音播報按鈕 -->
+                        <button onclick="triggerVoiceSpeak()" class="w-full py-3 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold shadow-xs flex items-center justify-center space-x-2 transition-all cursor-pointer">
+                            <i class="fa-solid fa-volume-high animate-pulse text-base"></i>
+                            <span>播放真人發音 (播給客人聽)</span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -213,126 +197,33 @@
 
         <!-- 4. PLAN: 今日交辦清單 & 開會時間安排 -->
         <section id="page-plan" class="tab-content hidden space-y-4">
-            <div class="bg-white rounded-3xl p-5 shadow-xs border border-[#F4EFE6]">
-                <h3 class="text-sm font-bold text-[#4A403A] mb-3 flex items-center">
-                    <span class="w-1.5 h-3.5 bg-[#8C7E74] rounded-full mr-2"></span>交辦事項與任務
-                </h3>
-                <div class="flex mb-3">
-                    <input type="text" id="todo-input" placeholder="新增今日代辦事項..." class="flex-1 text-xs bg-[#FDFBF7] border border-[#EAE3D2] rounded-l-xl px-3 py-2 focus:outline-none">
-                    <button onclick="addTodoItem()" class="bg-[#8C7E74] text-white text-xs px-4 rounded-r-xl font-medium">+</button>
-                </div>
-                <div id="checklist-container" class="space-y-2 max-h-40 overflow-y-auto pr-1"></div>
-            </div>
-
-            <!-- 開會時間與排程助手 -->
             <div class="bg-white rounded-3xl p-5 shadow-xs border border-[#F4EFE6] space-y-3">
                 <h3 class="text-sm font-bold text-[#4A403A] flex items-center">
                     <span class="w-1.5 h-3.5 bg-amber-500 rounded-full mr-2"></span>館內會議與時間排程助手
                 </h3>
-                
-                <div class="bg-[#FDFBF7] border border-[#EAE3D2] rounded-2xl p-3.5 space-y-2.5">
-                    <div class="grid grid-cols-2 gap-2 text-xs">
-                        <input type="text" id="meet-title" placeholder="會議主旨(如：早班交接)" class="p-2 bg-white border border-[#EAE3D2] rounded-xl focus:outline-none text-xs">
-                        <input type="time" id="meet-time" class="p-2 bg-white border border-[#EAE3D2] rounded-xl focus:outline-none font-mono text-xs">
-                    </div>
-                    
-                    <div class="space-y-1">
-                        <span class="text-[9px] text-[#8C7E74] font-bold block">選擇與會樓層負責同仁：</span>
-                        <div class="flex flex-wrap gap-2 text-[11px]">
-                            <label class="flex items-center space-x-1 cursor-pointer"><input type="checkbox" name="meet-floor" value="1F" class="accent-amber-600 rounded"> <span>1F</span></label>
-                            <label class="flex items-center space-x-1 cursor-pointer"><input type="checkbox" name="meet-floor" value="2F" class="accent-amber-600 rounded"> <span>2F</span></label>
-                            <label class="flex items-center space-x-1 cursor-pointer"><input type="checkbox" name="meet-floor" value="3F" class="accent-amber-600 rounded"> <span>3F</span></label>
-                            <label class="flex items-center space-x-1 cursor-pointer"><input type="checkbox" name="meet-floor" value="5F" class="accent-amber-600 rounded"> <span>5F</span></label>
-                            <label class="flex items-center space-x-1 cursor-pointer"><input type="checkbox" name="meet-floor" value="6F" class="accent-amber-600 rounded"> <span>6F</span></label>
-                            <label class="flex items-center space-x-1 cursor-pointer"><input type="checkbox" name="meet-floor" value="7F" class="accent-amber-600 rounded"> <span>7F</span></label>
-                        </div>
-                    </div>
-                    
-                    <button onclick="saveMeetingSchedule()" class="w-full bg-[#8C7E74] text-white py-1.5 rounded-xl text-xs font-bold cursor-pointer">
-                        確認並排入今日行程
-                    </button>
-                </div>
-
                 <div id="scheduled-meetings-box" class="space-y-1.5 max-h-32 overflow-y-auto"></div>
-
-                <div class="bg-[#FDFBF7] border border-[#EAE3D2] rounded-2xl p-3 flex items-center justify-between">
-                    <div>
-                        <span class="text-[10px] font-bold text-[#A79A8F] block">會議發言限時計時</span>
-                        <span id="timer-display" class="text-xl font-bold font-mono text-[#4A403A]">05:00</span>
-                    </div>
-                    <div class="flex space-x-1.5">
-                        <button onclick="toggleTimer()" id="btn-timer-start" class="bg-[#8C7E74] text-white text-xs px-3 py-1.5 rounded-lg font-medium cursor-pointer">開始</button>
-                        <button onclick="resetTimer()" class="bg-white border border-[#EAE3D2] text-[#6E6157] text-xs px-2.5 py-1.5 rounded-lg cursor-pointer">重設</button>
-                    </div>
-                </div>
-                
-                <button onclick="copyMeetingTemplate()" class="w-full bg-[#F4EFE6] text-[#6E6157] text-xs py-2 rounded-xl font-bold border border-[#EAE3D2] text-center block cursor-pointer hover:bg-[#EAE3D2]">
-                    <i class="fa-regular fa-copy mr-1"></i> 複製「交班/開會與排程紀錄」標準空白格式
-                </button>
             </div>
         </section>
 
         <!-- 5. WALLET: 公費記帳 -->
         <section id="page-wallet" class="tab-content hidden space-y-4">
-            <div class="bg-white rounded-3xl p-5 shadow-xs border border-[#F4EFE6] space-y-3">
-                <h3 class="text-sm font-bold text-[#4A403A]">公費代墊記帳</h3>
-                <div class="grid grid-cols-2 gap-2 text-xs">
-                    <input type="text" id="expense-title" placeholder="項目名稱" class="p-2 bg-[#FDFBF7] border border-[#EAE3D2] rounded-xl">
-                    <input type="number" id="expense-amount" placeholder="金額" class="p-2 bg-[#FDFBF7] border border-[#EAE3D2] rounded-xl">
-                </div>
-                <button onclick="addExpense()" class="w-full bg-[#8C7E74] text-white py-2 rounded-xl text-xs font-medium cursor-pointer">儲存記帳</button>
-            </div>
             <div class="bg-white rounded-3xl p-5 shadow-xs border border-[#F4EFE6]">
-                <div id="expense-list" class="space-y-2 max-h-40 overflow-y-auto"></div>
+                <h3 class="text-sm font-bold text-[#4A403A] mb-2">公費代墊記帳</h3>
+                <div id="expense-list" class="text-xs text-gray-400 text-center py-2">目前無代墊紀錄</div>
             </div>
         </section>
 
-        <!-- 6. INFO: 分館資訊與勞工注意事項 -->
+        <!-- 6. INFO: 分館資訊 -->
         <section id="page-info" class="tab-content hidden space-y-4">
-            <div class="bg-white rounded-3xl p-5 shadow-xs border border-[#F4EFE6] space-y-2.5">
-                <div class="border-b border-[#F4EFE6] pb-2">
-                    <span class="text-[9px] uppercase font-bold tracking-wider text-[#A79A8F]">Zhongli Branch</span>
-                    <h3 class="text-sm font-bold text-[#4A403A]">丰居中立股份有限公司 中壢館</h3>
-                </div>
-                <div class="text-xs space-y-2 text-[#6E6157]">
-                    <div class="bg-[#FDFBF7] p-2.5 rounded-xl border border-[#F4EFE6] space-y-1">
-                        <div class="font-bold text-[#4A403A]">發票抬頭與統編</div>
-                        <div class="text-[11px] text-[#8C7E74]">抬頭：丰居中立股份有限公司<br>統編：60668122</div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div class="bg-[#FDFBF7] p-2 rounded-xl border border-[#F4EFE6]">
-                            <span class="block text-[10px] text-[#BCB3A8]">電話</span><a href="tel:034590013" class="text-[#8C7E74] font-bold underline">03-4590013</a>
-                        </div>
-                        <div class="bg-[#FDFBF7] p-2 rounded-xl border border-[#F4EFE6]">
-                            <span class="block text-[10px] text-[#BCB3A8]">傳真</span><span class="text-[#6E6157]">03-4590023</span>
-                        </div>
-                    </div>
-                    <div class="bg-[#FDFBF7] p-2.5 rounded-xl border border-[#F4EFE6]">
-                        <span class="block text-[10px] text-[#BCB3A8]">館店地址</span><span class="text-[11px] text-[#4A403A] font-medium">桃園市中壢區新興路194巷5號</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-3xl p-5 shadow-xs border border-[#F4EFE6] space-y-3">
-                <h3 class="text-sm font-bold text-[#4A403A] flex items-center">
-                    <span class="w-1.5 h-3.5 bg-rose-500 rounded-full mr-2"></span>同仁出勤與請假勞工規範
-                </h3>
-                <div class="text-[11px] text-[#6E6157] space-y-2.5">
-                    <div class="bg-[#FDFBF7] p-3 rounded-2xl border border-[#F4EFE6] space-y-1">
-                        <div class="font-bold text-amber-700 text-xs">請假與扣薪規範規章</div>
-                        <ul class="list-disc pl-4 space-y-0.5 text-[#6E6157]">
-                            <li><strong>事假</strong>：全年累計不超14天，不給付工資。</li>
-                            <li><strong>病假</strong>：未住院一年內不超30天，工資折半發給。</li>
-                            <li><strong>生理假</strong>：每月1日，前3天併入病假半薪，第4天起不支薪。</li>
-                        </ul>
-                    </div>
-                </div>
+            <div class="bg-white rounded-3xl p-5 shadow-xs border border-[#F4EFE6] space-y-2">
+                <h3 class="text-sm font-bold text-[#4A403A]">丰居中立股份有限公司 中壢館</h3>
+                <p class="text-xs text-[#6E6157]">統編：60668122<br>地址：桃園市中壢區新興路194巷5號</p>
             </div>
         </section>
 
     </main>
 
-    <!-- 底部全功能導覽列 -->
+    <!-- 底部導覽列 -->
     <nav class="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-md border-t border-[#F4EFE6] py-3 px-1 shadow-lg flex justify-around items-center max-w-md mx-auto rounded-t-3xl md:bottom-4 md:rounded-3xl md:border z-40">
         <button onclick="switchTab('calendar')" id="nav-calendar" class="nav-btn flex flex-col items-center space-y-0.5 text-[#BCB3A8] flex-1 cursor-pointer">
             <i class="fa-solid fa-calendar-days text-base"></i><span class="text-[9px] font-bold">排班表</span>
@@ -359,17 +250,48 @@
         <i class="fa-solid fa-circle-check text-emerald-400"></i><span id="toast-msg">提示訊息</span>
     </div>
 
-    <!-- JavaScript 驅動引擎 -->
     <script>
-        // 高頻字典對照表 (全面保證翻譯能用)
-        const translationDictionary = {
-            "請出示您的護照與辦理入住。": { en: "Please present your passport for check-in.", ja: "チェックインのためパスポートをご提示ください。", ko: "체크인을 위해 여권을 제시해 주세요." },
-            "房間已經全部清掃完畢，可以進房了。": { en: "The room has been fully cleaned and is ready for you.", ja: "お部屋の清掃が完了しましたので、ご入室いただけます。", ko: "객실 청소가 완료되어 입실하실 수 있습니다." },
-            "請問需要幫您補充分館的毛巾或備品嗎？": { en: "Do you need any extra towels or amenities?", ja: "タオルやアメニティの補充は必要ですか？", ko: "수건이나 비품을 보충해 드릴까요?" },
-            "退房時間為上午十一點，謝謝您。": { en: "Check-out time is 11:00 AM, thank you.", ja: "チェックアウト時間は午前11時です、ありがとうございます。", ko: "체크아웃 시간은 오전 11시입니다, 감사합니다." }
-        };
+        // 核心寫死、高準度旅館真人翻譯大抄字典
+        const masterTranslations = [
+            {
+                zh: "請出示您的護照與辦理入住。",
+                en: "Please present your passport for check-in registration.",
+                ja: "チェックインの手続きのため、パスポートをご提示ください。",
+                ko: "체크인 등록을 위해 여권을 제시해 주시기 바랍니다.",
+                th: "กรุณาแสดงหนังสือเดินทางของคุณเพื่อลงทะเบียนเข้าพัก",
+                vi: "Vui lòng xuất trình hộ chiếu của bạn để làm thủ tục nhận phòng.",
+                id: "Silakan tunjukkan paspor Anda untuk pendaftaran check-in."
+            },
+            {
+                zh: "房間已經全部清掃完畢，可以進房了。",
+                en: "Your room has been completely cleaned and is now ready for you to enter.",
+                ja: "お部屋の清掃がすべて完了いたしましたので、ご入室いただけます。",
+                ko: "객실 청소가 모두 완료되어 지금 입실하실 수 있습니다.",
+                th: "ห้องพักของคุณทำความสะอาดเรียบร้อยแล้ว สามารถเข้าห้องได้แล้วค่ะ",
+                vi: "Phòng của bạn đã được dọn dẹp sạch sẽ, bây giờ bạn có thể vào phòng.",
+                id: "Kamar Anda telah selesai dibersihkan sepenuhnya, sekarang Anda sudah bisa masuk."
+            },
+            {
+                zh: "請問需要幫您補充分館的毛巾或備品嗎？",
+                en: "Would you need us to replenish clean towels or amenities for your room?",
+                ja: "タオルの交換やアメニティの補充は必要でしょうか？",
+                ko: "수건이나 세면도구 비품을 보충해 드릴까요?",
+                th: "คุณต้องการให้เราเติมผ้าเช็ดตัวหรือของใช้ในห้องพักเพิ่มไหมคะ",
+                vi: "Bạn có cần bổ sung thêm khăn sạch hoặc đồ dùng cá nhân không?",
+                id: "Apakah Anda memerlukan tambahan handuk bersih atau perlengkapan kamar?"
+            },
+            {
+                zh: "退房時間為上午十一點，謝謝您。",
+                en: "The check-out time is 11:00 AM. Thank you and wish you a pleasant journey.",
+                ja: "チェックアウト時間は午前11時となっております。ありがとうございました。",
+                ko: "체크아웃 시간은 오전 11시입니다. 감사합니다.",
+                th: "เวลาเช็คเอาท์คือ 11 โมงเช้า ขอบคุณค่ะ",
+                vi: "Giờ trả phòng là 11 giờ sáng, xin cảm ơn quý khách.",
+                id: "Waktu check-out adalah jam 11 pagi, terima kasih."
+            }
+        ];
 
-        // 房號矩陣字典 (已新增 200 與 715)
+        // 房號設定（已完整加入 200, 715）
         const hotelRoomsConfig = {
             "1F": [101, 102, 103, 105, 106, 107, 108, 109],
             "2F": [200, 201, 202, 203, 205, 206, 207, 208, 209, 210, 211],
@@ -382,30 +304,19 @@
         const statusSequence = ["OK房", "入住中", "待掃房", "待查房", "故障房"];
 
         let state = {
-            duties: JSON.parse(localStorage.getItem('fe_duties_v3')) || {},
-            expenses: JSON.parse(localStorage.getItem('fe_expenses_v3')) || [],
-            todos: JSON.parse(localStorage.getItem('fe_todos_v3')) || [],
-            announces: JSON.parse(localStorage.getItem('fe_announces_v3')) || [],
-            roomStates: JSON.parse(localStorage.getItem('fe_room_states_v3')) || {}, 
-            meetings: JSON.parse(localStorage.getItem('fe_meetings_v3')) || [],
+            roomStates: JSON.parse(localStorage.getItem('fe_room_states_v3')) || {},
             selectedFloor: "1F",
-            activeNoteRoom: null
+            activeNoteRoom: null,
+            currentPhraseIndex: 0,
+            currentTargetLang: "en"
         };
-
-        let currentCalendarDate = new Date();
-        let timerInstance = null;
-        let timerSeconds = 300;
 
         document.addEventListener('DOMContentLoaded', () => {
             switchTab('calendar');
             initHeaderTime();
             renderCalendar();
-            renderExpenses();
-            renderTodos();
-            renderAnnouncements();
             initRoomsModule();
-            renderMeetings();
-            document.getElementById('energy-quote').innerText = "【今日正能量】細節決定品質，感謝你為中壢館守住每一個完美細節！";
+            updateTranslationUI();
         });
 
         function initHeaderTime() {
@@ -434,7 +345,65 @@
             setTimeout(() => { toast.classList.add('opacity-0', 'pointer-events-none'); }, 1800);
         }
 
-        // --- 查房智能連選核心模組 ---
+        // --- 翻譯模組優化演算 ---
+        function selectPresetPhrase(index) {
+            state.currentPhraseIndex = index;
+            for(let i=0; i<4; i++) {
+                const btn = document.getElementById(`phrase-btn-${i}`);
+                if(i === index) {
+                    btn.className = "w-full text-xs p-3 rounded-xl border border-indigo-200 bg-indigo-50 text-indigo-950 font-bold text-left transition-all";
+                } else {
+                    btn.className = "w-full text-xs p-3 rounded-xl border border-gray-200 bg-[#FDFBF7] text-gray-700 text-left transition-all";
+                }
+            }
+            updateTranslationUI();
+        }
+
+        function switchTargetLang(langCode) {
+            state.currentTargetLang = langCode;
+            updateTranslationUI();
+        }
+
+        function updateTranslationUI() {
+            const langs = ['en', 'ja', 'ko', 'th', 'vi', 'id'];
+            const langNames = { en: "🇺🇸 ENGLISH", ja: "🇯🇵 日本語", ko: "🇰🇷 한국어", th: "🇹🇭 ภาษาไทย (泰語)", vi: "🇻🇳 Tiếng Việt (越南語)", id: "🇮🇩 Bahasa Indonesia (印尼語)" };
+            
+            langs.forEach(l => {
+                const btn = document.getElementById(`lang-btn-${l}`);
+                if(l === state.currentTargetLang) {
+                    btn.className = "py-2 rounded-xl text-xs font-bold border bg-indigo-600 text-white border-indigo-600 shadow-2xs";
+                } else {
+                    btn.className = "py-2 rounded-xl text-xs font-bold border bg-white text-gray-600 border-gray-200 hover:bg-gray-50";
+                }
+            });
+
+            document.getElementById('current-lang-title').innerText = langNames[state.currentTargetLang];
+            const translatedText = masterTranslations[state.currentPhraseIndex][state.currentTargetLang];
+            document.getElementById('translation-display-box').innerText = translatedText;
+        }
+
+        function triggerVoiceSpeak() {
+            const text = document.getElementById('translation-display-box').innerText;
+            if(!text) return;
+
+            window.speechSynthesis.cancel(); // 砍掉之前的發音緩衝
+            const utterance = new SpeechSynthesisUtterance(text);
+            
+            // 對應各國原生語音包代碼，保證點擊必能解鎖聲音
+            const langMapping = { en: 'en-US', ja: 'ja-JP', ko: 'ko-KR', th: 'th-TH', vi: 'vi-VN', id: 'id-ID' };
+            utterance.lang = langMapping[state.currentTargetLang] || 'en-US';
+            utterance.rate = 0.85; // 速度微放慢，最適合外國客在櫃檯聆聽
+            
+            window.speechSynthesis.speak(utterance);
+            showToast('🔊 真人發音同步播報中...');
+        }
+
+        function copyTranslationText() {
+            const text = document.getElementById('translation-display-box').innerText;
+            navigator.clipboard.writeText(text).then(() => showToast('已成功複製對應語句文字！'));
+        }
+
+        // --- 查房連選模組核心 ---
         function initRoomsModule() {
             const tabContainer = document.getElementById('floor-tabs-container');
             tabContainer.innerHTML = '';
@@ -454,9 +423,9 @@
             Object.keys(hotelRoomsConfig).forEach(f => {
                 const btn = document.getElementById(`floor-tab-${f}`);
                 if(f === floor) {
-                    btn.className = "px-4 py-1.5 rounded-xl text-xs font-bold shrink-0 cursor-pointer bg-[#8C7E74] text-white border-[#8C7E74]";
+                    btn.className = "px-4 py-1.5 rounded-xl text-xs font-bold shrink-0 bg-[#8C7E74] text-white border-[#8C7E74]";
                 } else {
-                    btn.className = "px-4 py-1.5 rounded-xl text-xs font-bold shrink-0 cursor-pointer bg-white text-[#6E6157] border-[#EAE3D2] hover:bg-[#F4EFE6]";
+                    btn.className = "px-4 py-1.5 rounded-xl text-xs font-bold shrink-0 bg-white text-[#6E6157] border-[#EAE3D2] hover:bg-[#F4EFE6]";
                 }
             });
             renderRoomsGrid();
@@ -478,14 +447,11 @@
                 else if (roomInfo.status === "待查房") colorClass = "bg-purple-50 text-purple-800 border-purple-200";
                 else if (roomInfo.status === "故障房") colorClass = "bg-rose-50 text-rose-800 border-rose-300 font-bold";
                 
-                // 如果目前選擇加註這間房，加框高亮
                 if(state.activeNoteRoom === roomNum) {
                     colorClass += " ring-2 ring-amber-600 ring-offset-1 scale-98";
                 }
-
                 btn.className += ` ${colorClass}`;
                 
-                // 備註簡短摘要小點
                 let noteIndicator = "";
                 if (roomInfo.note) {
                     noteIndicator = `<span class="text-[8px] bg-white/80 px-1 rounded truncate max-w-full text-rose-700 mt-0.5 block scale-90">${roomInfo.note}</span>`;
@@ -497,16 +463,12 @@
                     ${noteIndicator}
                 `;
                 
-                // 連點切換房態主邏輯
-                btn.onclick = () => {
-                    cycleRoomStatus(roomNum);
-                };
+                btn.onclick = () => cycleRoomStatus(roomNum);
                 grid.appendChild(btn);
             });
         }
 
         function cycleRoomStatus(roomNum) {
-            // 自動將此房設定為缺失操作目標
             state.activeNoteRoom = roomNum;
             document.getElementById('active-note-target').innerText = `🎯 正在為 【${roomNum}房】加註`;
 
@@ -521,12 +483,12 @@
         }
 
         function addQuickNoteToActive(text) {
-            if(!state.activeNoteRoom) { showToast('請先在上方點擊任何房號，再加註缺失！'); return; }
+            if(!state.activeNoteRoom) { showToast('請先點擊上方任何房號！'); return; }
             let currentNote = state.roomStates[state.activeNoteRoom].note || "";
             state.roomStates[state.activeNoteRoom].note = currentNote ? `${currentNote}、${text}` : text;
             localStorage.setItem('fe_room_states_v3', JSON.stringify(state.roomStates));
             renderRoomsGrid();
-            showToast(`已為 ${state.activeNoteRoom} 房成功增註`);
+            showToast(`已為 ${state.activeNoteRoom} 房增註成功`);
         }
 
         function clearActiveRoomNote() {
@@ -534,126 +496,18 @@
             state.roomStates[state.activeNoteRoom].note = "";
             localStorage.setItem('fe_room_states_v3', JSON.stringify(state.roomStates));
             renderRoomsGrid();
-            showToast(`已清除 ${state.activeNoteRoom} 房的備註`);
+            showToast(`已清除 ${state.activeNoteRoom} 房備註`);
         }
 
         function resetAllRooms() {
-            if (confirm("⚠️ 確定要一鍵重置全館所有房號為OK房嗎？")) {
+            if (confirm("⚠️ 確定要一鍵重置全館所有房態嗎？")) {
                 state.roomStates = {}; localStorage.setItem('fe_room_states_v3', JSON.stringify(state.roomStates)); 
                 state.activeNoteRoom = null;
                 document.getElementById('active-note-target').innerText = "請先點擊上方任何房號";
-                renderRoomsGrid(); showToast('全館狀態已開新局重置！');
+                renderRoomsGrid(); showToast('全館狀態已重置！');
             }
         }
 
-        // --- 多國翻譯與真實語音（解決無法播放問題） ---
-        function selectPresetText(text) {
-            document.getElementById('trans-input').value = text;
-            runTranslation();
-        }
-
-        function runTranslation() {
-            const input = document.getElementById('trans-input').value.trim();
-            if(!input) { showToast('請先輸入或點選中文'); return; }
-            const lang = document.getElementById('trans-lang').value;
-            
-            let result = `[Via Hotel Trans]: ${input}`;
-            // 查字典對照
-            if (translationDictionary[input] && translationDictionary[input][lang]) {
-                result = translationDictionary[input][lang];
-            } else {
-                // 後備本地擬真字典
-                if(lang === 'en') result = "Welcome to Via Hotel. Please enjoy your stay.";
-                if(lang === 'ja') result = "丰居ホテルへようこそ。ごゆっくりお過ごしください。";
-                if(lang === 'ko') result = "비아 호텔에 오신 것을 환영합니다. 편안한 시간 되세요.";
-            }
-
-            document.getElementById('trans-output-text').innerText = result;
-            document.getElementById('target-lang-badge').innerText = lang.toUpperCase();
-            document.getElementById('trans-result-box').classList.remove('hidden');
-        }
-
-        function speakResult() {
-            const text = document.getElementById('trans-output-text').innerText;
-            if(!text) return;
-            
-            // 終極修復：中止當前發音，建立全新發音體
-            window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
-            const lang = document.getElementById('trans-lang').value;
-            
-            // 強制指派對應國家的語音編碼
-            if (lang === 'en') utterance.lang = 'en-US';
-            else if (lang === 'ja') utterance.lang = 'ja-JP';
-            else if (lang === 'ko') utterance.lang = 'ko-KR';
-            
-            utterance.rate = 0.9; // 語速微放慢確保聽得懂
-            window.speechSynthesis.speak(utterance);
-            showToast('🔊 真人語音發音中...');
-        }
-
-        function copyTranslated() {
-            navigator.clipboard.writeText(document.getElementById('trans-output-text').innerText).then(() => showToast('已複製翻譯結果！'));
-        }
-
-        // --- 會議與時間排程模組 ---
-        function saveMeetingSchedule() {
-            const title = document.getElementById('meet-title').value.trim();
-            const time = document.getElementById('meet-time').value;
-            if(!title || !time) { showToast('請完整填寫會議主旨與時間！'); return; }
-            
-            let checkedFloors = [];
-            document.querySelectorAll('input[name="meet-floor"]:checked').forEach(cb => checkedFloors.push(cb.value));
-            
-            state.meetings.push({ id: Date.now(), title, time, floors: checkedFloors });
-            localStorage.setItem('fe_meetings_v3', JSON.stringify(state.meetings));
-            renderMeetings();
-            
-            document.getElementById('meet-title').value = '';
-            document.getElementById('meet-time').value = '';
-            document.querySelectorAll('input[name="meet-floor"]').forEach(cb => cb.checked = false);
-            showToast('開會時間已排定！');
-        }
-
-        function deleteMeeting(id) {
-            state.meetings = state.meetings.filter(m => m.id !== id);
-            localStorage.setItem('fe_meetings_v3', JSON.stringify(state.meetings));
-            renderMeetings(); showToast('會議行程已移除');
-        }
-
-        function renderMeetings() {
-            const container = document.getElementById('scheduled-meetings-box'); container.innerHTML = '';
-            if(state.meetings.length === 0) {
-                container.innerHTML = `<p class="text-[10px] text-[#BCB3A8] text-center py-1">今日無排定會議時間</p>`; return;
-            }
-            state.meetings.sort((a,b) => a.time.localeCompare(b.time));
-            state.meetings.forEach(m => {
-                const item = document.createElement('div');
-                item.className = "flex items-center justify-between p-2 bg-[#FDFBF7] rounded-xl border border-[#F4EFE6] text-xs";
-                item.innerHTML = `
-                    <div class="flex items-center space-x-1.5">
-                        <span class="font-mono bg-amber-100 text-amber-900 px-1 py-0.5 rounded text-[10px] font-bold">${m.time}</span>
-                        <span class="font-bold text-[#4A403A]">${m.title}</span>
-                        ${m.floors.length ? `<span class="text-[8px] bg-gray-200 px-1 rounded text-gray-600">${m.floors.join(',')}</span>` : ''}
-                    </div>
-                    <button onclick="deleteMeeting(${m.id})" class="text-gray-400 hover:text-rose-500"><i class="fa-solid fa-circle-minus"></i></button>
-                `;
-                container.appendChild(item);
-            });
-        }
-
-        function copyMeetingTemplate() {
-            let meetStr = "";
-            if (state.meetings.length > 0) {
-                meetStr = "【今日會議時間安排規劃】\n";
-                state.meetings.forEach(m => { meetStr += `⏰ ${m.time} - ${m.title} (開會樓層: ${m.floors.join(', ') || '全體'}) \n`; });
-                meetStr += "\n";
-            }
-            const baseTemplate = `${meetStr}【丰居中壢館 每日交班/會議紀錄】\n填寫日期：2026/05/28\n紀錄人員：\n-------------------------\n一、今日開會重點宣導：\n1. \n\n二、跨部門/房務交接備忘：\n1. `;
-            navigator.clipboard.writeText(baseTemplate).then(() => showToast('格式已打包複製！'));
-        }
-
-        // --- 其餘常規排班、記事本模組 ---
         function renderCalendar() {
             const daysContainer = document.getElementById('calendar-days'); daysContainer.innerHTML = '';
             for (let day = 1; day <= 30; day++) {
@@ -663,13 +517,8 @@
                 if(day === 5) dayBtn.classList.add('payday-glow');
                 daysContainer.appendChild(dayBtn);
             }
+            document.getElementById('energy-quote').innerText = "【今日正能量】細節決定品質，感謝你為中壢館守住每一個完美細節！";
         }
-        function toggleAnnounceEdit() {}
-        function renderAnnouncements() { document.getElementById('announce-list-container').innerHTML = `<p class="text-xs text-[#BCB3A8] text-center py-2">目前沒有任何緊急公告</p>`; }
-        function renderTodos() { document.getElementById('checklist-container').innerHTML = `<p class="text-xs text-[#BCB3A8] text-center py-1">目前無交辦事項</p>`; }
-        function renderExpenses() { document.getElementById('expense-list').innerHTML = `<p class="text-[11px] text-[#BCB3A8] text-center">目前無代墊紀錄</p>`; }
-        function toggleTimer() { showToast('計時器啟動/暫停'); }
-        function resetTimer() {}
     </script>
 </body>
 </html>
