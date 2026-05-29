@@ -7,7 +7,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght=400;500;700;900&family=Quicksand:wght=500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -21,14 +21,6 @@
         ::-webkit-scrollbar-thumb { background: #EAE3D2; border-radius: 10px; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
         
-        /* 新版發薪日金元寶呼吸高亮特效 */
-        .payday-glow {
-            background: linear-gradient(135deg, #FFFDF5 0%, #FFF9E6 100%) !important;
-            border: 2px solid #F59E0B !important;
-            box-shadow: 0 0 15px rgba(245, 158, 11, 0.6);
-            position: relative;
-            overflow: hidden;
-        }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
@@ -36,6 +28,39 @@
         .guest-flip-view {
             transform: rotate(180deg);
             transition: transform 0.4s ease-in-out;
+        }
+
+        /* ========================================================
+           ✨ 全新升級：精緻特定日期「動態呼吸高亮光圈」特效 
+           ======================================================== */
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 8px rgba(var(--glow-rgb), 0.3); border-color: rgba(var(--glow-rgb), 0.4); }
+            50% { box-shadow: 0 0 16px rgba(var(--glow-rgb), 0.7); border-color: rgba(var(--glow-rgb), 0.9); }
+        }
+        .special-day-glow {
+            animation: pulseGlow 2.5s infinite ease-in-out;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #FFFFFF 0%, rgba(var(--glow-rgb), 0.04) 100%) !important;
+            border-width: 2px !important;
+        }
+        
+        /* 各個特定日期的色彩參數 (RGB) 與微調 */
+        .day-glow-1  { --glow-rgb: 14, 165, 233;  } /* 1號 藍色 */
+        .day-glow-5  { --glow-rgb: 245, 158, 11;  } /* 5號 金黃 */
+        .day-glow-10 { --glow-rgb: 249, 115, 22;  } /* 10號 橙色 */
+        .day-glow-15 { --glow-rgb: 140, 126, 116; } /* 15號 溫暖棕 */
+        .day-glow-20 { --glow-rgb: 16, 185, 129;  } /* 20號 翡翠綠 */
+        .day-glow-25 { --glow-rgb: 236, 72, 153;  } /* 25號 玫瑰粉 */
+        .day-glow-30 { --glow-rgb: 139, 92, 246;  } /* 30號 紫羅蘭 */
+
+        /* 水滴/小圓點微震盪動畫 */
+        @keyframes bounceLight {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+        }
+        .animate-sub-bounce {
+            animation: bounceLight 2s infinite ease-in-out;
         }
     </style>
 </head>
@@ -319,33 +344,31 @@
     </div>
 
     <script>
-        // 激勵金句語錄庫
         const inspiringQuotes = [
             "每一位旅客的舒適回憶，都有你流汗付出的足跡。今天也辛苦了！",
             "好好吃飯，好好休息，您值得所有的溫柔與美好。",
-            "生活中總有不期而遇的溫暖，和生生不息的希望。",
+            "生活中總有不期而遇的溫慢，和生生不息的希望。",
             "親切的微笑是館店最強大的名片，謝謝你今天也在第一線發光！",
             "細心查房、貼心服務！再忙碌也別忘了喝口水，休息一下唷！",
             "今天解決的每一個小缺失，都是丰居贏得好口碑的大基石！加油！",
             "新的一天，從一個微笑開始，祝您今天擁有好心情！",
             "每一次出發，都是為了遇見更好的自己。",
             "相信自己，您遠比想像中更強大。加油！",
-            "團隊因為有你的堅守而更完整，祝今天值班順心、一切平安！"
+            "團隊 because of you 而更完整，祝今天值班順心、一切平安！"
         ];
 
-        // 固定大抄對照配置 (核心修復：補齊第二筆 ch 的前雙引號)
         const fixedCheatSheets = [
-            {"ch": "請出示您的護照以辦理入住登記。", "en": "Please show your passport for check-in registration.", "ja": "チェックイン手続きのため、パスポートをご提示ください。", "ko": "체크인 등록을 위해 여권을 보여주세요.", "th": "กรุณาแสดงพาสปอร์ตเพื่อลงทะเบียนเข้าพักค่ะ", "vi": "Vui lòng xuất trình hộ chiếu để làm thủ tục nhận phòng.", "id": "Silakan tunjukkan paspor Anda untuk pendaftaran check-in." },
-            {"ch": "住宿一晚以上之客房享有打掃服務(每日09:30-16:30)。如不需打掃請按下請勿打擾。", "en": "Rooms staying more than one night receive housekeeping service daily from 09:30 to 16:30. Please press 'Do Not Disturb' if service is not needed.", "ja": "2泊以上ご滞在のお部屋は毎日9:30から16:30まで清掃サービスがございます。清掃が不要な場合は「起こさないでください（Do Not Disturb）」ボタンを押してください。", "ko": "2박 이상 투宿객실은 매일 09:30~16:30 사이에 객실 청소 서비스가 제공됩니다. 청소를 원치 않으시면 '방해금지(Do Not Disturb)'를 눌러주세요.", "th": "ห้องพักที่เข้าพักมากกว่า 1 คืนจะได้รับบริการทำความสะอาดทุกวัน เวลา 09:30-16:30 น. หากไม่ต้องการบริการกรุณากดปุ่ม 'ห้ามรบกวน' ค่ะ", "vi": "Các phòng lưu trú từ hai đêm trở lên sẽ được phục vụ dọn phòng hàng ngày (09:30-16:30). Nếu không cần dọn dẹp, vui lòng nhấn 'Xin đừng làm phiền'.", "id": "Kamar yang menginap lebih dari satu malam mendapatkan layanan pembersihan harian dari jam 09:30 hingga 16:30. Silakan tekan 'Jangan Ganggu' jika layanan tidak diperlukan."},
-            {"ch": "續住期間如需整理床鋪，請將此環保卡放置於床上。如您願意響應環保、無需更換床單，請將卡片留置於電話旁的原處即可。謝謝您的支持。", "en": "If you would like your bed linens changed during your stay, please place this eco-card on the bed. If you wish to join our eco-friendly initiative and do not need them changed, please simply leave this card in its original place by the telephone. Thank you for your support.","ja": "ご滞在中のベッドメイク（シーツ交換）をご希望の場合は、この環境カードをベッドの上に置いてください。環境保護にご協力いただき、交換が不要な場合は、カードを電話機の下（元の場所）のままにしておいてください。ご協力ありがとうございます。","ko": "투숙 기간 중 침대 정돈(침구 교체)을 원하시면 이 친환경 카드를 침대 위에 올려두어 주십시오. 환경 보호에 동참하여 침구 교체가 필요 없으신 경우, 카드를 전화기 옆 원래 자리에 그대로 두시면 됩니다. 협조해 주셔서 감사합니다。","th": "หากท่านต้องการให้ทำความสะอาดเตียง (เปลี่ยนผ้าปูที่นอน) ระหว่างการเข้าพัก กรุณาวางการ์ดรักษ์โลกนี้ไว้บนเตียง หากท่านต้องการร่วมรักษ์สิ่งแวดล้อมและไม่จำเป็นต้องเปลี่ยนผ้าปูที่นอน กรุณาเปลี่ยนวางการ์ดไว้ที่เดิมข้างโทรศัพท์ ขอบคุณในความร่วมมือของท่าน","vi": "Nếu quý khách muốn dọn giường (thay ga trải giường) trong thời gian lưu trú, xin vui lòng đặt thẻ bảo vệ môi trường này lên trên giường. Nếu quý khách muốn hưởng ứng phong trào bảo vệ môi trường và không cần thay ga, xin vui lòng để nguyên thẻ tại vị trí cũ bên cạnh điện thoại. Xin chân thành cảm ơn sự hợp tác của quý khách。","id": "Jika Anda memerlukan perapihan tempat tidur (pergantian sprei) selama masa menginap, silakan letakkan kartu ramah lingkungan ini di atas tempat tidur. Jika Anda ingin mendukung program ramah lingkungan dan tidak memerlukan pergantian sprei, mohon biarkan kartu ini tetap berada di tempat semula di dekat telepon. Terima kasih atas kerja sama Anda."},
-            {"ch": "全館嚴禁吸菸！違者最高可處新台幣2千元至1萬元之罰鍰。","en": "Smoking is strictly prohibited throughout the premises. Violators will be subject to a fine of NT$2,000 to NT$10,000.","ja": "全館禁煙です。違反した場合は、2,000台湾ドルから10,000台湾ドルの罰金が科せられます。","ko": "전 객실 및 건물 내 전 구역은 금연입니다. 위반 시 대만 달러(NT$) 2,000원 이상 10,000원 이하의 과태료가 부과될 수 있습니다.","th":"ห้ามสูบบุหรี่ทั่วทั้งอาคาร! ผู้ฝ่าฝืนอาจถูกปรับตั้งแต่ 2,000 ถึง 10,000 ดอลลาร์ไต้หวัน (NT$)","vi": "Nghiêm cấm hút thuốc trong toàn bộ khuôn viên khách sạn! Người vi phạm có thể bị phạt tiền từ 2.000 đến 10.000 Tân Đài Tệ (NT$).", "id": "Dilarang keras merokok di seluruh area hotel! Pelanggar dapat dikenakan denda sebesar NT$2.000 hingga NT$10.000."},
-            {"ch": "為避免馬桶堵塞，請勿將衛生紙、棉織用品等個人用品丟入馬桶內。","en": "To prevent clogging, please do not flush toilet paper, sanitary products, or other personal items down the toilet.","ja": "トイレの詰まりを防ぐため、トイレットペーパーや生理用品、コットンなどを便器に流さないようお願いいたします。","ko": "변기 막힘을 방지하기 위해 휴지, 물티슈, 여성용품 등의 개인 물품을 변기에 버리지 말아 주시기 바랍니다.","th": "เพื่อป้องกันชักโครกอุดตัน กรุณาอย่าทิ้งกระดาษชำระ ผ้าอนามัย หรือสิ่งของอื่นๆ ลงในชักโครก","vi": "Để tránh tắc nghẽn bồn cầu, vui lòng không vứt giấy vệ sinh, băng vệ sinh hoặc các vật dụng cá nhân khác vào bồn cầu.","id": "Untuk mencegah toilet tersumbat, mohon tidak membuang tisu toilet, pembalut, atau barang pribadi lainnya ke dalam toilet."},
-            {"ch": "晚間22:00過後請降低音量，以維護其他住客的住宿品質與休息權益。","en": "To ensure a peaceful environment for all guests, please keep noise levels to a minimum after 10:00 PM.","ja": "他の客室のお客様が快適にお休みいただけるよう、夜間22:00以降はお静かにお願いいたします。","ko": "다른 투숙객들의 편안한 휴식을 위해 밤 22:00 이후에는 소음을 자제해 주시기 바랍니다.","th": "กรุณาลดเสียงดังหลังเวลา 22:00 น. เพื่อไม่ให้เป็นการรบกวนการพักผ่อนของผู้เข้าพักท่านอื่น","vi": "Vui lòng giảm âm lượng sau 22:00 đêm để tránh ảnh hưởng đến không gian nghỉ ngơi của các du khách khác.","id": "Mohon kecilkan volume suara Anda setelah pukul 22:00 demi kenyamanan istirahat tamu lainnya."},
-            {"ch": "如有任何問題或需要協助，請由房內電話直撥「9」與櫃檯聯繫。","en": "Should you require any assistance, please dial \"9\" from your in-room phone to contact the front desk.","ja": "ご不明な点やご要望がございましたら、お部屋の電話から「9」番を押してフロントまでご連絡ください。","ko": "문의 사항이나 도움이 필요하신 경우, 객室 내 전화기로 '9'번을 눌러 프런트 데스크로 연락해 주십시오.","th": "หากมีข้อสงสัยหรือต้องการความช่วยเหลือ กรุณากด \"9\" จากโทรศัพท์ในห้องพักเพื่อติดต่อเคาน์เตอร์ส่วนหน้า","vi": "Nếu có bất kỳ thắc mắc nào hoặc cần trợ giúp, vui lòng bấm số \"9\" từ điện thoại trong phòng để liên hệ với quầy lễ tân.","id": "Jika Anda memiliki pertanyaan atau memerlukan bantuan, silakan hubungi resepsionis dengan menekan angka \"9\" dari telepon kamar Anda."},
-            {"ch": "1樓左側設有24小時自助輕食吧（內含自助洗烘衣間）；2樓自助按摩椅亦為24小時開放使用。","en": "The 24-hour self-service snack bar is located on the left side of the 1st floor, featuring a laundry and drying room. The self-service massage chairs on the 2nd floor are also open 24 hours.","ja": "1階の左側には24時間営業のセルフサービス軽食バー（コインランドリー併設）がございます。また、2階のセルフマッサージチェアも24時間ご利用いただけます。","ko": "1F 좌측には 24시간 셀프 스낵바(세탁기 및 건조기 구비)가 마련되어 있으며, 2F 셀프 안마의자 또한 24시간 상시 개방되어 있습니다.","th": "บาร์ของว่างบริการตนเองตลอด 24 ชั่วโมง ตั้งอยู่ทางด้านซ้ายของชั้น 1 ซึ่งมีห้องซักผ้าและอบผ้าให้บริการ นอกจากนี้ เก้าอี้นวดบริการตนเองบนชั้น 2 還เปิดให้บริการตลอด 24 ชั่วโมงเช่นกัน","vi": "Quầy snack tự phục vụ 24H nằm ở phía bên trái tầng 1, bên trong có khu giặt và sấy quần áo; Ghế massage tự động tại tầng 2 cũng mở cửa phục vụ 24H.","id": "Bar camilan mandiri 24 jam terletak di sisi kiri lantai 1, yang juga menyediakan ruang cuci dan pengering pakaian. Kursi pijat mandiri di lantai 2 juga buka selama 24 jam."},
+            { "ch": "請出示您的護照以辦理入住登記。", "en": "Please show your passport for check-in registration.", "ja": "チェックイン手続きのため、パスポートをご提示ください。", "ko": "체크인 등록을 위해 여권을 보여주세요.", "th": "กรุณาแสดงพาสปอร์ตเพื่อลงทะเบียนเข้าพักค่ะ", "vi": "Vui lòng xuất trình hộ chiếu để làm thủ tục nhận phòng.", "id": "Silakan tunjukkan paspor Anda untuk pendaftaran check-in." },
+            { "ch": "住宿一晚以上之客房享有打掃服務(每日09:30-16:30)。如不需打掃請按下請勿打擾。", "en": "Rooms staying more than one night receive housekeeping service daily from 09:30 to 16:30. Please press 'Do Not Disturb' if service is not needed." },
+            { "ch": "續住期間如需整理床鋪，請將此環保卡放置於床上。如您願意響應環保、無需更換床單，請將卡片留置於電話旁的原處即可。謝謝您的支持。", "en": "If you would like your bed linens changed during your stay, please place this eco-card on the bed. If you wish to join our eco-friendly initiative and do not need them changed, please simply leave this card in its original place by the telephone. Thank you for your support.","ja": "ご滞在中のベッドメイク（シーツ交換）をご希望の場合は、この環境カードをベッドの上に置いてください。環境保護にご協力いただき、交換が不要な場合は、カードを電話機の下（元の場所）のままにしておいてください。ご協力ありがとうございます。","ko": "투숙 기간 중 침대 정돈(침구 교체)을 원하시면 이 친환경 카드를 침대 위에 올려두어 주십시오. 환경 보호에 동참하여 침구 교체가 필요 없으신 경우, 카드를 전화기 옆 원래 자리에 그대로 두시면 됩니다. 협조해 주셔서 감사합니다。","th": "หากท่านต้องการให้ทำความสะอาดเตียง (เปลี่ยนผ้าปูที่นอน) ระหว่างการเข้าพัก กรุณาวางการ์ดรักษ์โลกนี้ไว้บนเตียง หากท่านต้องการร่วมรักษ์สิ่งแวดล้อมและไม่จำเป็นต้องเปลี่ยนผ้าปูที่นอน กรุณาเปลี่ยนวางการ์ดไว้ที่เดิมข้างโทรศัพท์ ขอบคุณในความร่วมมือของท่าน","vi": "Nếu quý khách muốn dọn giường (thay ga trải giường) trong thời gian lưu trú, xin vui lòng đặt thẻ bảo vệ môi trường này lên trên giường. Nếu quý khách muốn hưởng ứng phong trào bảo vệ môi trường và không cần thay ga, xin vui lòng để nguyên thẻ tại vị trí cũ bên cạnh điện thoại. Xin chân thành cảm ơn sự hợp tác của quý khách。","id": "Jika Anda memerlukan perapihan tempat tidur (pergantian sprei) selama masa menginap, silakan letakkan kartu ramah lingkungan ini di atas tempat tidur. Jika Anda ingin mendukung program ramah lingkungan dan tidak memerlukan pergantian sprei, mohon biarkan kartu ini tetap berada di tempat semula di dekat telepon. Terima kasih atas kerja sama Anda."},
+            { "ch": "全館嚴禁吸菸！違者最高可處新台幣2千元至1萬元之罰鍰。","en": "Smoking is strictly prohibited throughout the premises. Violators will be subject to a fine of NT$2,000 to NT$10,000.","ja": "全館禁煙です。違反した場合は、2,000台湾ドルから10,000台湾ドルの罰金が科せられます。","ko": "전 객실 및 건물 내 전 구역은 금연입니다. 위반 시 대만 달러(NT$) 2,000원 이상 10,000원 이하의 과태료가 부과될 수 있습니다.","th":"ห้ามสูบบุหรี่ทั่วทั้งอาคาร! ผู้ฝ่าฝืนอาจถูกปรับตั้งแต่ 2,000 ถึง 10,000 ดอลลาร์ไต้หวัน (NT$)","vi": "Nghiêm cấm hút thuốc trong toàn bộ khuôn viên khách sạn! Người vi phạm có thể bị phạt tiền từ 2.000 đến 10.000 Tân Đài Tệ (NT$).", "id": "Dilarang keras merokok di seluruh area hotel! Pelanggar dapat dikenakan denda sebesar NT$2.000 hingga NT$10.000."},
+            { "ch": "為避免馬桶堵塞，請勿將衛生紙、棉織用品等個人用品丟入馬桶內。","en": "To prevent clogging, please do not flush toilet paper, sanitary products, or other personal items down the toilet.","ja": "トイレの詰まりを防ぐため、トイレットペーパーや生理用品、コットンなどを便器に流さないようお願いいたします。","ko": "변기 막힘을 방지하기 위해 휴지, 물티슈, 여성용품 등의 개인 물품을 변기에 버리지 말아 주시기 바랍니다.","th": "เพื่อป้องกันชักโครกอุดตัน กรุณาอย่าทิ้งกระดาษชำระ ผ้าอนามัย หรือสิ่งของอื่นๆ ลงในชักโครก","vi": "Để tránh tắc nghẽn bồn cầu, vui lòng không vứt giấy vệ sinh, băng vệ sinh hoặc các vật dụng cá nhân khác vào bồn cầu.","id": "Untuk mencegah toilet tersumbat, mohon tidak membuang tisu toilet, pembalut, atau barang pribadi lainnya ke dalam toilet."},
+            { "ch": "晚間22:00過後請降低音量，以維護其他住客的住宿品質與休息權益。","en": "To ensure a peaceful environment for all guests, please keep noise levels to a minimum after 10:00 PM.","ja": "他の客室のお客様が快適にお休みいただけるよう、夜間22:00以降はお静かにお願いいたします。","ko": "다른 투숙객들의 편안한 휴식을 위해 밤 22:00 이후에는 소음을 자제해 주시기 바랍니다.","th": "กรุณาลดเสียงดังหลังเวลา 22:00 น. เพื่อ不ให้เป็นการรบกวนการพักผ่อนของผู้เข้าพักท่านอื่น","vi": "Vui lòng giảm âm lượng sau 22:00 đêm để tránh ảnh hưởng đến không gian nghỉ ngơi của các du khách khác.","id": "Mohon kecilkan volume suara Anda setelah pukul 22:00 demi kenyamanan istirahat tamu lainnya."},
+            { "ch": "如有任何問題或需要協助，請由房內電話直撥「9」與櫃檯聯繫。","en": "Should you require any assistance, please dial \"9\" from your in-room phone to contact the front desk.","ja": "ご不明な点やご要望がございましたら、お部屋の電話から「9」番を押してフロントまでご連絡ください。","ko": "문의 사항이나 도움이 필요하신 경우, 객실 내 전화기로 '9'번을 눌러 프런트 데스크로 연락해 주십시오.","th": "หากมีข้อสงสัย或ต้องการความช่วยเหลือ กรุณากд \"9\" จากโทรศัพท์ในห้องพักเพื่อติดต่อเคาน์เตอร์ส่วนหน้า","vi": "Nếu có bất kỳ thắc mắc nào hoặc cần trợ giúp, vui lòng bấm số \"9\" từ điện thoại trong phòng để liên hệ với quầy lễ tân.","id": "Jika Anda memiliki pertanyaan atau memerlukan bantuan, silakan hubungi resepsionis dengan menekan angka \"9\" dari telepon kamar Anda."},
+            { "ch": "1樓左側設有24小時自助輕食吧（內含自助洗烘衣間）；2樓自助按摩椅亦為24小時開放使用。","en": "The 24-hour self-service snack bar is located on the left side of the 1st floor, featuring a laundry and drying room. The self-service massage chairs on the 2nd floor are also open 24 hours.","ja": "1階の左側には24時間営業のセルフサービス軽食バー（コインランドリー併設）がございます。また、2階のセルフマッサージチェアも24時間ご利用いただけます。","ko": "1F 좌측에는 24시간 셀프 스낵바(세탁기 및 건조기 구비)가 마련되어 있으며, 2F 셀프 안마의자 또한 24시간 상시 개방되어 있습니다.","th": "บาร์ของว่างบริการตนเองตลอด 24 ชั่วโมง ตั้งอยู่ทางด้านซ้ายของชั้น 1 ซึ่งมีห้องซักผ้าและอบผ้าให้บริการ นอกจากนี้ เก้าอี้นวดบริการตนเองบนชั้น 2 ยังเปิดให้บริการตลอด 24 ชั่วโมงเช่นกัน","vi": "Quầy snack tự phục vụ 24H nằm ở phía bên trái tầng 1, bên trong có khu giặt và sấy quần áo; Ghế massage tự động tại tầng 2 juga buka sedia 24H.","id": "Bar camilan mandiri 24 jam terletak di sisi kiri lantai 1, yang juga menyediakan ruang cuci dan pengering pakaian. Kursi pijat mandiri di lantai 2 juga buka selama 24 jam."},
             { "ch": "請問需要幫您補充乾淨的毛巾或備品嗎？", "en": "Would you like us to replenish clean towels or amenities for you?", "ja": "新しいタオルやアメニティの補充は必要ですか？", "ko": "수건이나 비품을 추가로 보충해 드릴까요?", "th": "ต้องการให้เติมผ้าเช็ดตัวผืนใหม่หรือของใช้ในห้องน้ำไหมคะ", "vi": "Bạn có cần bổ sung thêm khăn sạch hoặc đồ dùng cá nhân không?", "id": "Apakah Anda memerlukan tambahan handuk bersih atau perlengkapan kamar?" },
-            { "ch": "飯店退房時間為上午十二點，謝謝您的配合。", "en": "The hotel check-out time is 12:00 PM. Thank you for your cooperation.", "ja": "チェックアウト時間は正午12時です。ご協力ありがとうございます。", "ko": "체크아웃 시간은 정오 12시입니다. 협조해 주셔서 감사합니다.", "th": "เวลาเช็คเอาท์ของโรงแรมคือ 12 โมงกลางวัน ขอขอบคุณค่ะ", "vi": "Giờ trả phòng của khách sạn là 12 giờ trưa. Cảm ơn sự hợp tác của bạn.", "id": "Waktu check-out hotel adalah jam 12 siang. Terima kasih atas kerja samanya." },
-            { "ch": "這是您的房間卡，請隨身攜帶，進出都需要刷卡。", "en": "Here is your room card. Please keep it with you; you'll need it to enter.", "ja": "こちらがお部屋のカードキーです。外出の際は常にお持ちください。", "ko": "객실 카드키입니다. 출입 시 필요하니 꼭 휴대해 주세요.", "th": "นี่คือคีย์การ์ดห้องพักของคุณ กรุณาพกติดตัวไว้ตลอดนะคะ", "vi": "Đây là thẻ phòng của bạn. Vui lòng mang theo bên mình khi ra vào.", "id": "Ini adalah kartu kamar Anda. Harap bawa selalu karena diperlukan untuk akses." }
+            { "ch": "飯店退房時間為上午十二點，謝謝您的配合。", "en": "The hotel check-out time is 12:00 AM. Thank you for your cooperation.", "ja": "チェックアウト時間は午前12時です。ご協力ありがとうございます。", "ko": "체크아웃 시간은 오전 12시입니다. 협조해 주셔서 감사합니다。", "th": "เวลาเช็คเอาท์ของโรงแรมคือ 12 โมงเช้า ขอขอบคุณค่ะ", "vi": "Giờ trả phòng của khách sạn là 12 giờ sáng. Cảm ơn sự hợp tác của bạn.", "id": "Waktu check-out hotel adalah jam 12 pagi. Terima kasih atas kerja samanya." },
+            { "ch": "這是您的房間卡，請隨身攜帶，進出都需要刷卡。", "en": "Here is your room card. Please keep it with you; you'll need it to enter.", "ja": "こちらがお部屋のカードキーです。外出の際は常にお持ちください。", "ko": "객실 카드키입니다. 出입 시 필요하니 꼭 휴대해 주세요.", "th": "นี่คือคีย์การ์ดห้องพักของคุณ กรุณาพกติดตัวไว้ตลอดนะคะ", "vi": "Đây là thẻ phòng của bạn. Vui lòng mang theo bên mình khi ra vào.", "id": "Ini adalah kartu kamar Anda. Harap bawa selalu karena diperlukan untuk akses." }
         ];
 
         const hotelRoomsConfig = {
@@ -376,6 +399,17 @@
         let activeSelectedDateKey = null;
         let isFlipped = false;
 
+        // 特定高亮日期配置庫（自訂主題與圖示）
+        const specialDaysTheme = {
+            1:  { icon: 'fa-rocket',      colorClass: 'text-sky-500/15',     label: '始', labelClass: 'bg-sky-500 text-white' },
+            5:  { icon: 'fa-coins',       colorClass: 'text-amber-500/15',   label: '薪', labelClass: 'bg-amber-500 text-white' },
+            10: { icon: 'fa-bolt',        colorClass: 'text-orange-500/15',  label: '充', labelClass: 'bg-orange-500 text-white' },
+            15: { icon: 'fa-coffee',      colorClass: 'text-stone-600/15',   label: '咖', labelClass: 'bg-stone-600 text-white' },
+            20: { icon: 'fa-face-smile',  colorClass: 'text-emerald-500/15', label: '笑', labelClass: 'bg-emerald-500 text-white' },
+            25: { icon: 'fa-trophy',      colorClass: 'text-pink-500/15',    label: '衝', labelClass: 'bg-pink-500 text-white' },
+            30: { icon: 'fa-gifts',       colorClass: 'text-violet-500/15',  label: '完', labelClass: 'bg-violet-500 text-white' }
+        };
+
         document.addEventListener('DOMContentLoaded', () => {
             switchTab('calendar');
             initHeaderTime();
@@ -392,32 +426,24 @@
         function initHeaderTime() {
             const update = () => {
                 const now = new Date();
-                const el = document.getElementById('header-time');
-                if (el) el.innerText = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+                document.getElementById('header-time').innerText = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
             };
             update(); setInterval(update, 1000);
         }
 
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            const activeTab = document.getElementById(`page-${tabId}`);
-            if (activeTab) activeTab.classList.remove('hidden');
-            
+            document.getElementById(`page-${tabId}`).classList.remove('hidden');
             document.querySelectorAll('.nav-btn').forEach(btn => {
                 btn.classList.remove('text-[#8C7E74]'); btn.classList.add('text-[#BCB3A8]');
             });
-            const activeBtn = document.getElementById(`nav-${tabId}`);
-            if (activeBtn) {
-                activeBtn.classList.remove('text-[#BCB3A8]');
-                activeBtn.classList.add('text-[#8C7E74]');
-            }
+            document.getElementById(`nav-${tabId}`).classList.remove('text-[#BCB3A8]');
+            document.getElementById(`nav-${tabId}`).classList.add('text-[#8C7E74]');
         }
 
         function showToast(msg) {
             const toast = document.getElementById('toast');
-            const msgEl = document.getElementById('toast-msg');
-            if (!toast || !msgEl) return;
-            msgEl.innerText = msg;
+            document.getElementById('toast-msg').innerText = msg;
             toast.classList.remove('opacity-0', 'pointer-events-none');
             toast.classList.add('opacity-100');
             setTimeout(() => { toast.classList.add('opacity-0', 'pointer-events-none'); }, 1800);
@@ -425,17 +451,14 @@
 
         function refreshMotivationQuote() {
             const r = Math.floor(Math.random() * inspiringQuotes.length);
-            const el = document.getElementById('motivate-text');
-            if (el) el.innerText = inspiringQuotes[r];
+            document.getElementById('motivate-text').innerText = r;
         }
 
-        // --- 智慧翻譯對談核心 ---
         function setLangAndTranslate(langCode) {
             state.currentTargetLang = langCode;
             const langs = ['en', 'ja', 'ko', 'th', 'vi', 'id'];
             langs.forEach(l => {
                 const btn = document.getElementById(`l-btn-${l}`);
-                if (!btn) return;
                 if(l === langCode) btn.className = "py-2.5 rounded-xl text-sm font-black border bg-indigo-600 text-white border-indigo-600 shadow-sm";
                 else btn.className = "py-2.5 rounded-xl text-sm font-bold border bg-white text-gray-600 border-gray-200 hover:bg-gray-50";
             });
@@ -444,17 +467,16 @@
         }
 
         function triggerLiveTranslation() {
-            const inputEl = document.getElementById('custom-translate-input');
+            const srcText = document.getElementById('custom-translate-input').value.trim();
             const outputEl = document.getElementById('custom-translate-output');
-            if (!inputEl || !outputEl) return;
-
-            const srcText = inputEl.value.trim();
+            
             if (!srcText) {
                 outputEl.innerText = "等待輸入中文...";
                 return;
             }
             
             outputEl.innerText = "⚡ 正在即時翻譯中...";
+            
             const targetLang = state.currentTargetLang;
             const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=zh-TW&tl=${targetLang}&dt=t&q=${encodeURIComponent(srcText)}`;
             
@@ -475,16 +497,13 @@
         }
 
         function clearTranslateInput() {
-            const input = document.getElementById('custom-translate-input');
-            const output = document.getElementById('custom-translate-output');
-            if (input) input.value = '';
-            if (output) output.innerText = '等待輸入中文...';
+            document.getElementById('custom-translate-input').value = '';
+            document.getElementById('custom-translate-output').innerText = '等待輸入中文...';
         }
 
         function toggleGuestFlip() {
             isFlipped = !isFlipped;
             const container = document.getElementById('translate-output-container');
-            if (!container) return;
             if (isFlipped) {
                 container.classList.add('guest-flip-view', 'scale-110', 'bg-amber-50/40');
                 showToast('🔄 已為旅客翻轉畫面！可將手機放於櫃檯對談');
@@ -494,15 +513,8 @@
         }
 
         function speakCustomTranslatedText() {
-            const outputEl = document.getElementById('custom-translate-output');
-            if (!outputEl) return;
-            const text = outputEl.innerText;
+            const text = document.getElementById('custom-translate-output').innerText;
             if(!text || text.includes('等待') || text.includes('翻譯中')) return;
-            
-            if (!window.speechSynthesis) {
-                showToast('❌ 您的瀏覽器不支援語音語音播報');
-                return;
-            }
             window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
             const langMapping = { en: 'en-US', ja: 'ja-JP', ko: 'ko-KR', th: 'th-TH', vi: 'vi-VN', id: 'id-ID' };
@@ -513,28 +525,25 @@
         }
 
         function copyTranslatedText() {
-            const outputEl = document.getElementById('custom-translate-output');
-            if (!outputEl) return;
-            const text = outputEl.innerText;
+            const text = document.getElementById('custom-translate-output').innerText;
             if(!text || text.includes('等待')) return;
-            navigator.clipboard.writeText(text).then(() => {
-                showToast('📋 翻譯結果已複製到剪貼簿！');
-            });
+            navigator.clipboard.writeText(text);
+            showToast('📋 翻譯結果已複製到剪貼簿！');
         }
 
         function renderFixedCheatSheet() {
             const container = document.getElementById('fixed-cheat-sheet-container');
-            if (!container) return;
             container.innerHTML = '';
             fixedCheatSheets.forEach((sheet, idx) => {
-                const foreignText = sheet[state.currentTargetLang] || sheet['en'] || "Translation unavailable";
+                const foreignText = sheet[state.currentTargetLang];
+                if (!foreignText) return;
                 const card = document.createElement('div');
                 card.className = "bg-[#FDFBF7] border border-[#EAE3D2] rounded-xl p-3.5 space-y-2";
                 card.innerHTML = `
                     <div class="text-xs text-gray-500 font-bold">💡 華語：${sheet.ch}</div>
                     <div class="text-sm font-black text-[#4A403A] bg-white p-2.5 rounded-lg border border-[#F4EFE6] select-all">${foreignText}</div>
                     <button onclick="speakFixedText(${idx})" class="w-full py-1.5 bg-amber-500 text-white rounded-lg text-xs font-bold shadow-2xs flex items-center justify-center space-x-1 cursor-pointer">
-                        <i class="fa-solid fa-volume-high"></i> <span>播放此句音量</span>
+                        <i class="fa-solid fa-volume-high"></i> <span>播放此句語音</span>
                     </button>
                 `;
                 container.appendChild(card);
@@ -542,13 +551,7 @@
         }
 
         function speakFixedText(index) {
-            const sheet = fixedCheatSheets[index];
-            if (!sheet) return;
-            const text = sheet[state.currentTargetLang] || sheet['en'];
-            if (!window.speechSynthesis) {
-                showToast('❌ 您的瀏覽器不支援語音語音播報');
-                return;
-            }
+            const text = fixedCheatSheets[index][state.currentTargetLang];
             window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
             const langMapping = { en: 'en-US', ja: 'ja-JP', ko: 'ko-KR', th: 'th-TH', vi: 'vi-VN', id: 'id-ID' };
@@ -558,16 +561,12 @@
             showToast('🔊 語音同步播報中...');
         }
 
-        // --- 排班月曆模組 ---
+        // --- 排班月曆模組 (全面升級：支援1、5、10、15、20、25、30號的主題呼吸光圈與半透明大圖示) ---
         function renderCalendar() {
-            const container = document.getElementById('calendar-days'); 
-            if (!container) return;
-            container.innerHTML = '';
-            
+            const container = document.getElementById('calendar-days'); container.innerHTML = '';
             const year = currentCalendarDate.getFullYear();
             const month = currentCalendarDate.getMonth();
-            const titleEl = document.getElementById('calendar-month-year');
-            if (titleEl) titleEl.innerText = `${year}年 ${String(month + 1).padStart(2, '0')}月`;
+            document.getElementById('calendar-month-year').innerText = `${year}年 ${String(month + 1).padStart(2, '0')}月`;
 
             const firstDayIndex = new Date(year, month, 1).getDay();
             const totalDays = new Date(year, month + 1, 0).getDate();
@@ -586,22 +585,30 @@
                     btn.classList.add('border-amber-500', 'bg-amber-50/50');
                 }
 
-                if (d === 5) {
-                    btn.classList.add('payday-glow');
-                    const ingotIcon = document.createElement('div');
-                    ingotIcon.className = "absolute text-amber-500 opacity-15 text-4xl bottom-0 right-1 pointer-events-none z-0";
-                    ingotIcon.innerHTML = `<i class="fa-solid fa-coins"></i>`;
-                    btn.appendChild(ingotIcon);
+                // 檢查是否為設定的特定高亮日期
+                const hasTheme = specialDaysTheme[d];
+                if (hasTheme) {
+                    // 加入獨立的動態呼吸光圈外框與漸層背景
+                    btn.classList.add('special-day-glow', `day-glow-${d}`);
+                    
+                    // 插入底下大面積半透明主題圖示 (不干擾文字，位置微調到底部)
+                    const bgIcon = document.createElement('div');
+                    bgIcon.className = `absolute ${hasTheme.colorClass} text-4xl bottom-0 right-1 pointer-events-none z-0`;
+                    bgIcon.innerHTML = `<i class="fa-solid ${hasTheme.icon}"></i>`;
+                    btn.appendChild(bgIcon);
                 }
 
+                // 日期數字
                 const dateNumSpan = document.createElement('span');
                 dateNumSpan.innerText = d;
                 dateNumSpan.className = "text-[#4A403A] font-bold z-10";
                 btn.appendChild(dateNumSpan);
 
+                // 資訊標籤容器
                 const infoContainer = document.createElement('div');
                 infoContainer.className = "flex flex-col items-center space-y-0.5 z-10 w-full";
 
+                // 1. 先處理並獨立顯示員工的排班假別標籤（不衝突）
                 if (state.duties[dateKey]) {
                     const dutySpan = document.createElement('span');
                     const duty = state.duties[dateKey];
@@ -614,13 +621,15 @@
                     infoContainer.appendChild(dutySpan);
                 }
 
-                if (d === 5) {
-                    const payLabel = document.createElement('span');
-                    payLabel.innerText = "薪";
-                    payLabel.className = "text-[10px] font-black px-1.5 py-0.2 rounded-full bg-amber-500 text-white shadow-2xs animate-bounce";
-                    infoContainer.appendChild(payLabel);
+                // 2. 如果是特殊節點日期，追加專屬的精緻主題圓點圓標（上下並存顯示）
+                if (hasTheme) {
+                    const customLabel = document.createElement('span');
+                    customLabel.innerText = hasTheme.label;
+                    customLabel.className = `text-[10px] font-black px-1.5 py-0.2 rounded-full shadow-2xs animate-sub-bounce ${hasTheme.labelClass}`;
+                    infoContainer.appendChild(customLabel);
                 }
 
+                // 維持版面高度防呆
                 if (infoContainer.children.length === 0) {
                     const emptySpan = document.createElement('span');
                     emptySpan.className = "h-4";
@@ -640,18 +649,13 @@
 
         function openDutyPanel(dateKey) {
             activeSelectedDateKey = dateKey;
-            const dateStrEl = document.getElementById('selected-date-str');
-            const panelEl = document.getElementById('duty-panel');
-            if (dateStrEl) dateStrEl.innerText = dateKey.replace(/-/g, '/');
-            if (panelEl) {
-                panelEl.classList.remove('hidden');
-                panelEl.scrollIntoView({ behavior: 'smooth' });
-            }
+            document.getElementById('selected-date-str').innerText = dateKey.replace(/-/g, '/');
+            document.getElementById('duty-panel').classList.remove('hidden');
+            document.getElementById('duty-panel').scrollIntoView({ behavior: 'smooth' });
         }
 
         function closeDutyPanel() {
-            const panel = document.getElementById('duty-panel');
-            if (panel) panel.classList.add('hidden');
+            document.getElementById('duty-panel').classList.add('hidden');
             activeSelectedDateKey = null;
         }
 
@@ -673,31 +677,22 @@
             closeDutyPanel();
         }
 
-        // --- 館內即時公告欄模組 ---
         function toggleAnnounceEdit() {
             announceEditMode = !announceEditMode;
             const zone = document.getElementById('announce-edit-zone');
             const btn = document.getElementById('btn-announce-mode');
-            if (!zone || !btn) return;
             if (announceEditMode) { zone.classList.remove('hidden'); btn.innerHTML = `<i class="fa-solid fa-xmark mr-1"></i>關閉管理`; }
             else { zone.classList.add('hidden'); btn.innerHTML = `<i class="fa-solid fa-gear mr-1"></i>管理公告`; }
         }
 
         function addAnnouncement() {
-            const titleEl = document.getElementById('announce-input-title');
-            const contentEl = document.getElementById('announce-input-content');
-            const urgentEl = document.getElementById('announce-input-urgent');
-            if (!titleEl || !contentEl) return;
-
-            const title = titleEl.value.trim();
-            const content = contentEl.value.trim();
-            const isUrgent = urgentEl ? urgentEl.checked : false;
-            
+            const title = document.getElementById('announce-input-title').value.trim();
+            const content = document.getElementById('announce-input-content').value.trim();
+            const isUrgent = document.getElementById('announce-input-urgent').checked;
             if (!title || !content) { showToast('⚠️ 請填寫公告標題與內容！'); return; }
             state.announces.unshift({ id: Date.now(), title, content, urgent: isUrgent, date: new Date().toLocaleDateString('zh-TW') });
             localStorage.setItem('fe_announces_v6', JSON.stringify(state.announces));
-            
-            titleEl.value = ''; contentEl.value = ''; if (urgentEl) urgentEl.checked = false;
+            document.getElementById('announce-input-title').value = ''; document.getElementById('announce-input-content').value = ''; document.getElementById('announce-input-urgent').checked = false;
             renderAnnouncements(); toggleAnnounceEdit(); showToast('🎉 館內最新公告發布成功！');
         }
 
@@ -708,9 +703,7 @@
         }
 
         function renderAnnouncements() {
-            const container = document.getElementById('announce-list-container'); 
-            if (!container) return;
-            container.innerHTML = '';
+            const container = document.getElementById('announce-list-container'); container.innerHTML = '';
             if (state.announces.length === 0) { container.innerHTML = `<p class="text-xs text-gray-400 italic text-center py-4">目前暫無館內公告事項</p>`; return; }
             state.announces.forEach(item => {
                 const card = document.createElement('div');
@@ -728,12 +721,9 @@
             });
         }
 
-        // --- 直覺連選查房工具模組 ---
         function initRoomsModule() { renderFloorTabs(); renderRoomsMatrix(); }
         function renderFloorTabs() {
-            const container = document.getElementById('floor-tabs-container'); 
-            if (!container) return;
-            container.innerHTML = '';
+            const container = document.getElementById('floor-tabs-container'); container.innerHTML = '';
             Object.keys(hotelRoomsConfig).forEach(floor => {
                 const btn = document.createElement('button'); btn.innerText = floor;
                 btn.className = floor === state.selectedFloor ? "px-5 py-2 rounded-xl text-sm font-black bg-amber-600 text-white shadow-xs cursor-pointer shrink-0" : "px-5 py-2 rounded-xl text-sm font-bold bg-[#FDFBF7] border border-[#EAE3D2] text-[#6E6157] hover:bg-[#F4EFE6] cursor-pointer shrink-0";
@@ -743,9 +733,7 @@
         }
 
         function renderRoomsMatrix() {
-            const container = document.getElementById('rooms-matrix-grid'); 
-            if (!container) return;
-            container.innerHTML = '';
+            const container = document.getElementById('rooms-matrix-grid'); container.innerHTML = '';
             const rooms = hotelRoomsConfig[state.selectedFloor] || [];
             rooms.forEach(roomNum => {
                 if (!state.roomStates[roomNum]) state.roomStates[roomNum] = { status: "OK房", note: "" };
@@ -774,24 +762,14 @@
 
         function setActiveNoteTarget(roomNum) {
             state.activeNoteRoom = roomNum; const roomData = state.roomStates[roomNum];
-            const targetEl = document.getElementById('active-note-target');
-            const inputEl = document.getElementById('room-custom-note-input');
-            const btnEl = document.getElementById('btn-save-custom-note');
-            
-            if (targetEl) targetEl.innerText = `🏠 ${roomNum} 房 (${roomData.status})`;
-            if (inputEl) {
-                inputEl.disabled = false; 
-                inputEl.value = roomData.note || '';
-                inputEl.focus();
-            }
-            if (btnEl) btnEl.disabled = false;
+            document.getElementById('active-note-target').innerText = `🏠 ${roomNum} 房 (${roomData.status})`;
+            const input = document.getElementById('room-custom-note-input'); input.disabled = false; input.value = roomData.note || '';
+            document.getElementById('btn-save-custom-note').disabled = false; input.focus();
         }
 
         function saveCustomRoomNote() {
             if (!state.activeNoteRoom) return;
-            const inputEl = document.getElementById('room-custom-note-input');
-            if (!inputEl) return;
-            state.roomStates[state.activeNoteRoom].note = inputEl.value.trim();
+            state.roomStates[state.activeNoteRoom].note = document.getElementById('room-custom-note-input').value.trim();
             saveRoomStatesToStorage(); renderRoomsMatrix(); showToast(`✍️ ${state.activeNoteRoom} 房備註儲存成功！`);
         }
 
@@ -799,48 +777,34 @@
             if (!state.activeNoteRoom) { showToast('💡 請先雙擊上方房號，再加入備註！'); return; }
             let curr = state.roomStates[state.activeNoteRoom].note || '';
             state.roomStates[state.activeNoteRoom].note = curr + (curr ? ' ' : '') + quickText;
-            const inputEl = document.getElementById('room-custom-note-input');
-            if (inputEl) inputEl.value = state.roomStates[state.activeNoteRoom].note;
+            document.getElementById('room-custom-note-input').value = state.roomStates[state.activeNoteRoom].note;
             saveRoomStatesToStorage(); renderRoomsMatrix(); showToast(`已新增：${quickText}`);
         }
 
         function clearActiveRoomNote() {
             if (!state.activeNoteRoom) return; state.roomStates[state.activeNoteRoom].note = '';
-            const inputEl = document.getElementById('room-custom-note-input');
-            if (inputEl) inputEl.value = ''; 
-            saveRoomStatesToStorage(); renderRoomsMatrix();
+            document.getElementById('room-custom-note-input').value = ''; saveRoomStatesToStorage(); renderRoomsMatrix();
         }
 
         function resetAllRooms() {
             if (confirm('確定要一鍵重置所有房號狀態與備註嗎？')) {
                 state.roomStates = {}; saveRoomStatesToStorage();
-                state.activeNoteRoom = null; 
-                const targetEl = document.getElementById('active-note-target');
-                const inputEl = document.getElementById('room-custom-note-input');
-                const btnEl = document.getElementById('btn-save-custom-note');
-                
-                if (targetEl) targetEl.innerText = '請先雙擊上方房號';
-                if (inputEl) { inputEl.value = ''; inputEl.disabled = true; }
-                if (btnEl) btnEl.disabled = true;
-                renderRoomsMatrix(); showToast('🧹 全館重置成功！');
+                state.activeNoteRoom = null; document.getElementById('active-note-target').innerText = '請先雙擊上方房號';
+                document.getElementById('room-custom-note-input').value = ''; document.getElementById('room-custom-note-input').disabled = true;
+                document.getElementById('btn-save-custom-note').disabled = true; renderRoomsMatrix(); showToast('🧹 全館重置成功！');
             }
         }
         function saveRoomStatesToStorage() { localStorage.setItem('fe_room_states_v6', JSON.stringify(state.roomStates)); }
 
-        // --- 今日交辦清單模組 ---
         function addTodoItem() {
-            const inputEl = document.getElementById('todo-input');
-            if (!inputEl) return;
-            const text = inputEl.value.trim(); if (!text) return;
+            const text = document.getElementById('todo-input').value.trim(); if (!text) return;
             state.todos.push({ id: Date.now(), text, done: false });
-            localStorage.setItem('fe_todos_v6', JSON.stringify(state.todos)); inputEl.value = ''; renderTodos();
+            localStorage.setItem('fe_todos_v6', JSON.stringify(state.todos)); document.getElementById('todo-input').value = ''; renderTodos();
         }
         function toggleTodoItem(id) { state.todos = state.todos.map(t => t.id === id ? { ...t, done: !t.done } : t); localStorage.setItem('fe_todos_v6', JSON.stringify(state.todos)); renderTodos(); }
         function deleteTodoItem(id) { state.todos = state.todos.filter(t => t.id !== id); localStorage.setItem('fe_todos_v6', JSON.stringify(state.todos)); renderTodos(); }
         function renderTodos() {
-            const container = document.getElementById('checklist-container'); 
-            if (!container) return;
-            container.innerHTML = '';
+            const container = document.getElementById('checklist-container'); container.innerHTML = '';
             if (state.todos.length === 0) { container.innerHTML = `<p class="text-xs text-gray-400 italic text-center py-4">目前沒有交辦事項</p>`; return; }
             state.todos.forEach(t => {
                 const row = document.createElement('div'); row.className = "flex items-center justify-between p-3 bg-[#FDFBF7] border border-[#EAE3D2] rounded-xl space-x-2";
@@ -849,23 +813,16 @@
             });
         }
 
-        // --- 開會與交接助手 ---
         function saveMeetingSchedule() {
-            const titleEl = document.getElementById('meet-title');
-            const timeEl = document.getElementById('meet-time');
-            if (!titleEl || !timeEl) return;
-            
-            const title = titleEl.value.trim(); const time = timeEl.value;
+            const title = document.getElementById('meet-title').value.trim(); const time = document.getElementById('meet-time').value;
             if (!title || !time) { showToast('⚠️ 請填寫會議主旨與時間！'); return; }
             state.meetings.push({ id: Date.now(), title, time }); state.meetings.sort((a, b) => a.time.localeCompare(b.time));
             localStorage.setItem('fe_meetings_v6', JSON.stringify(state.meetings));
-            titleEl.value = ''; timeEl.value = ''; renderMeetings(); showToast('⏰ 行程已排入！');
+            document.getElementById('meet-title').value = ''; document.getElementById('meet-time').value = ''; renderMeetings(); showToast('⏰ 行程已排入！');
         }
         function deleteMeeting(id) { state.meetings = state.meetings.filter(m => m.id !== id); localStorage.setItem('fe_meetings_v6', JSON.stringify(state.meetings)); renderMeetings(); }
         function renderMeetings() {
-            const container = document.getElementById('scheduled-meetings-box'); 
-            if (!container) return;
-            container.innerHTML = '';
+            const container = document.getElementById('scheduled-meetings-box'); container.innerHTML = '';
             if (state.meetings.length === 0) { container.innerHTML = `<p class="text-xs text-gray-400 italic text-center py-2">目前沒有預定會議</p>`; return; }
             state.meetings.forEach(m => {
                 const div = document.createElement('div'); div.className = "flex items-center justify-between p-2.5 bg-amber-50/60 border border-amber-200 rounded-xl text-xs font-bold text-amber-900";
@@ -874,35 +831,23 @@
             });
         }
 
-        // --- 公費記帳模組 ---
         function addExpense() {
-            const titleEl = document.getElementById('expense-title');
-            const amountEl = document.getElementById('expense-amount');
-            if (!titleEl || !amountEl) return;
-
-            const title = titleEl.value.trim(); const amount = parseFloat(amountEl.value);
+            const title = document.getElementById('expense-title').value.trim(); const amount = parseFloat(document.getElementById('expense-amount').value);
             if (!title || isNaN(amount) || amount <= 0) { showToast('⚠️ 請輸入正確的項目與金額！'); return; }
             state.expenses.push({ id: Date.now(), title, amount, date: new Date().toLocaleDateString('zh-TW') });
             localStorage.setItem('fe_expenses_v6', JSON.stringify(state.expenses));
-            titleEl.value = ''; amountEl.value = ''; renderExpenses(); showToast('💰 記帳成功！');
+            document.getElementById('expense-title').value = ''; document.getElementById('expense-amount').value = ''; renderExpenses(); showToast('💰 記帳成功！');
         }
         function deleteExpense(id) { state.expenses = state.expenses.filter(e => e.id !== id); localStorage.setItem('fe_expenses_v6', JSON.stringify(state.expenses)); renderExpenses(); }
         function renderExpenses() {
-            const container = document.getElementById('expense-list'); 
-            const totalEl = document.getElementById('expense-total-amount');
-            if (!container) return;
-            container.innerHTML = ''; let total = 0;
-            if (state.expenses.length === 0) { 
-                container.innerHTML = `<p class="text-xs text-gray-400 italic text-center py-4">本期尚無記帳紀錄</p>`; 
-                if (totalEl) totalEl.innerText = '0'; 
-                return; 
-            }
+            const container = document.getElementById('expense-list'); container.innerHTML = ''; let total = 0;
+            if (state.expenses.length === 0) { container.innerHTML = `<p class="text-xs text-gray-400 italic text-center py-4">本期尚無記帳紀錄</p>`; document.getElementById('expense-total-amount').innerText = '0'; return; }
             state.expenses.forEach(e => {
                 total += e.amount; const row = document.createElement('div'); row.className = "flex items-center justify-between p-3 bg-[#FDFBF7] border border-[#EAE3D2] rounded-xl text-sm font-bold text-[#4A403A]";
                 row.innerHTML = `<div class="flex flex-col"><span>${e.title}</span><span class="text-[10px] text-gray-400 font-medium">${e.date}</span></div><div class="flex items-center space-x-3"><span class="text-amber-700 font-black">$${e.amount}</span><button onclick="deleteExpense(${e.id})" class="text-gray-400 hover:text-rose-600 p-1 text-xs"><i class="fa-solid fa-trash-can"></i></button></div>`;
                 container.appendChild(row);
             });
-            if (totalEl) totalEl.innerText = total.toLocaleString();
+            document.getElementById('expense-total-amount').innerText = total.toLocaleString();
         }
     </script>
 </body>
